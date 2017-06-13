@@ -20,3 +20,9 @@ func (err Error) Error() string {
 		err.API.Error,
 	)
 }
+
+type NotFoundError Error
+
+func (err NotFoundError) Error() string {
+	return Error(err).Error()
+}

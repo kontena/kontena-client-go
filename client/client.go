@@ -39,24 +39,29 @@ func (client *Client) Get(path string, result interface{}) error {
 }
 
 func do(sling *sling.Sling, responseBody interface{}) error {
-	var requestError Error
+	var clientError Error
 
 	if httpRequest, err := sling.Request(); err != nil {
 		return fmt.Errorf("Invalid request: %v", err)
-	} else if httpResponse, err := sling.Do(httpRequest, responseBody, &requestError.API); err != nil {
+	} else if httpResponse, err := sling.Do(httpRequest, responseBody, &clientError.API); err != nil {
 		return fmt.Errorf("%v %v: %v", httpRequest.Method, httpRequest.URL, err)
-	} else if httpResponse.StatusCode < 200 || httpResponse.StatusCode >= 300 {
-		requestError.httpRequest = httpRequest
-		requestError.httpResponse = httpResponse
-
-		return requestError
 	} else {
+		clientError.httpRequest = httpRequest
+		clientError.httpResponse = httpResponse
+
 		log.Printf("[DEBUG] %v %v => HTTP %v %v: %#v",
 			httpRequest.Method, httpRequest.URL,
 			httpResponse.StatusCode, httpResponse.Status,
 			responseBody,
 		)
 
-		return nil
+		switch httpResponse.StatusCode {
+		case 200, 201:
+			return nil
+		case 404:
+			return NotFoundError(clientError)
+		default:
+			return clientError
+		}
 	}
 }
