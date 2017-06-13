@@ -21,7 +21,7 @@ func (client *Client) init(config Config) error {
 	client.httpClient = config.httpClient()
 	client.sling = sling.New().Client(client.httpClient).Base(config.URL)
 
-	client.Grids = gridsClient{client.sling.New().Path("/v1/grids/")}
+	client.Grids = gridsClient{client.sling}
 
 	return nil
 }
