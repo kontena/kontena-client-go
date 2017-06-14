@@ -1,10 +1,6 @@
 package client
 
-import (
-	"github.com/dghubble/sling"
-
-	"github.com/kontena/terraform-provider-kontena/api"
-)
+import "github.com/kontena/terraform-provider-kontena/api"
 
 type GridsAPI interface {
 	List() ([]api.Grid, error)
@@ -15,33 +11,33 @@ type GridsAPI interface {
 }
 
 type gridsClient struct {
-	sling *sling.Sling
+	client *Client
 }
 
 func (gridsClient gridsClient) List() ([]api.Grid, error) {
 	var grids []api.Grid
 
-	return grids, do(gridsClient.sling.New().Get("/v1/grids"), &grids)
+	return grids, gridsClient.client.do(gridsClient.client.sling.New().Get("/v1/grids"), &grids)
 }
 
 func (gridsClient gridsClient) Get(id string) (api.Grid, error) {
 	var grid api.Grid
 
-	return grid, do(gridsClient.sling.New().Path("/v1/grids/").Get(id), &grid)
+	return grid, gridsClient.client.do(gridsClient.client.sling.New().Path("/v1/grids/").Get(id), &grid)
 }
 
 func (gridsClient gridsClient) Create(params api.GridPOST) (api.Grid, error) {
 	var grid api.Grid
 
-	return grid, do(gridsClient.sling.New().Post("/v1/grids").BodyJSON(params), &grid)
+	return grid, gridsClient.client.do(gridsClient.client.sling.New().Post("/v1/grids").BodyJSON(params), &grid)
 }
 
 func (gridsClient gridsClient) Update(id string, params api.GridPUT) (api.Grid, error) {
 	var grid api.Grid
 
-	return grid, do(gridsClient.sling.New().Path("/v1/grids/").Put(id).BodyJSON(params), &grid)
+	return grid, gridsClient.client.do(gridsClient.client.sling.New().Path("/v1/grids/").Put(id).BodyJSON(params), &grid)
 }
 
 func (gridsClient gridsClient) Delete(id string) error {
-	return do(gridsClient.sling.New().Path("/v1/grids/").Delete(id), nil)
+	return gridsClient.client.do(gridsClient.client.sling.New().Path("/v1/grids/").Delete(id), nil)
 }

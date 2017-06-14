@@ -10,14 +10,21 @@ import (
 type Error struct {
 	httpRequest  *http.Request
 	httpResponse *http.Response
-	API          api.Error
+	apiError     api.Error
+}
+
+func (err Error) HTTPStatus() int {
+	return err.httpResponse.StatusCode
+}
+func (err Error) APIError() api.Error {
+	return err.apiError
 }
 
 func (err Error) Error() string {
 	return fmt.Sprintf("%v %v => HTTP %v %v: %v",
 		err.httpRequest.Method, err.httpRequest.URL,
 		err.httpResponse.StatusCode, err.httpResponse.Status,
-		err.API.Error,
+		err.apiError.Error,
 	)
 }
 
