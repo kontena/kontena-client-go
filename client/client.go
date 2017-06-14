@@ -17,6 +17,7 @@ type Client struct {
 	httpClient *http.Client
 
 	Grids GridsAPI
+	Nodes NodesAPI
 }
 
 func (client *Client) init(config Config) error {
@@ -30,6 +31,7 @@ func (client *Client) init(config Config) error {
 	}
 
 	client.Grids = gridsClient{client}
+	client.Nodes = nodesClient{client}
 
 	return nil
 }
