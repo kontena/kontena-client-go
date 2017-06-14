@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"golang.org/x/oauth2"
 )
@@ -10,6 +11,10 @@ import (
 type Config struct {
 	URL         string
 	AccessToken string
+}
+
+func (config Config) makeURL() (*url.URL, error) {
+	return url.Parse(config.URL)
 }
 
 func (config Config) httpClient() *http.Client {

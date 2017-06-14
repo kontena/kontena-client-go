@@ -89,3 +89,40 @@ func TestPing500(t *testing.T) {
 		assert.EqualError(t, err, fmt.Sprintf("GET %v/v1/ping => HTTP 500 Internal Server Error: map[test:foo]", test.server.URL))
 	}
 }
+
+func TestPOST(t *testing.T) {
+	var test = makeTest()
+	var requestBody = api.GridPOST{
+		Name:        "test",
+		InitialSize: 3,
+	}
+	var responseBody = api.Grid{
+		Name:        "test",
+		InitialSize: 3,
+	}
+
+	test.mux.HandleFunc("/v1/test", func(w http.ResponseWriter, r *http.Request) {
+		var requestPayload api.GridPOST
+
+		assert.Equal(t, "POST", r.Method, "request method")
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"), "request content-type")
+
+		if err := json.NewDecoder(r.Body).Decode(&requestPayload); err != nil {
+			t.Fatalf("request body json: %v", err)
+		}
+
+		assert.Equal(t, requestBody, requestPayload, "request payload")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(responseBody)
+	})
+
+	var responsePayload api.Grid
+
+	if err := test.client.post(request{RequestBody: requestBody, ResponseBody: &responsePayload}, "/v1/test"); err != nil {
+		t.Fatalf("post error: %v", err)
+	}
+
+	assert.Equal(t, responseBody, responsePayload, "response payload")
+}

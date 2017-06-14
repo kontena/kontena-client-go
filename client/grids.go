@@ -17,27 +17,27 @@ type gridsClient struct {
 func (gridsClient gridsClient) List() ([]api.Grid, error) {
 	var grids []api.Grid
 
-	return grids, gridsClient.client.do(gridsClient.client.sling.New().Get("/v1/grids"), &grids)
+	return grids, gridsClient.client.get(request{ResponseBody: &grids}, "/v1/grids")
 }
 
 func (gridsClient gridsClient) Get(id string) (api.Grid, error) {
 	var grid api.Grid
 
-	return grid, gridsClient.client.do(gridsClient.client.sling.New().Path("/v1/grids/").Get(id), &grid)
+	return grid, gridsClient.client.get(request{ResponseBody: &grid}, "/v1/grids", id)
 }
 
 func (gridsClient gridsClient) Create(params api.GridPOST) (api.Grid, error) {
 	var grid api.Grid
 
-	return grid, gridsClient.client.do(gridsClient.client.sling.New().Post("/v1/grids").BodyJSON(params), &grid)
+	return grid, gridsClient.client.post(request{RequestBody: params, ResponseBody: &grid}, "/v1/grids")
 }
 
 func (gridsClient gridsClient) Update(id string, params api.GridPUT) (api.Grid, error) {
 	var grid api.Grid
 
-	return grid, gridsClient.client.do(gridsClient.client.sling.New().Path("/v1/grids/").Put(id).BodyJSON(params), &grid)
+	return grid, gridsClient.client.put(request{RequestBody: params, ResponseBody: &grid}, "/v1/grids", id)
 }
 
 func (gridsClient gridsClient) Delete(id string) error {
-	return gridsClient.client.do(gridsClient.client.sling.New().Path("/v1/grids/").Delete(id), nil)
+	return gridsClient.client.delete(request{}, "/v1/grids", id)
 }

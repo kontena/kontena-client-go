@@ -7,5 +7,5 @@ import (
 func (client *Client) Ping() error {
 	var ping api.Ping
 
-	return client.Get("/v1/ping", &ping)
+	return client.get(request{ResponseBody: &ping}, "/v1/ping")
 }
