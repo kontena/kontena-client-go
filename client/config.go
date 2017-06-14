@@ -32,9 +32,5 @@ func (config Config) MakeClient() (*Client, error) {
 		return nil, err
 	}
 
-	if err := client.Ping(); err != nil {
-		return nil, err
-	}
-
 	return &client, nil
 }
