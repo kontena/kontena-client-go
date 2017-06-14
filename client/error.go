@@ -21,9 +21,9 @@ func (err Error) APIError() api.Error {
 }
 
 func (err Error) Error() string {
-	return fmt.Sprintf("%v %v => HTTP %v %v: %v",
+	return fmt.Sprintf("%v %v => HTTP %v: %v",
 		err.httpRequest.Method, err.httpRequest.URL,
-		err.httpResponse.StatusCode, err.httpResponse.Status,
+		err.httpResponse.Status,
 		err.apiError.Error,
 	)
 }

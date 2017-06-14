@@ -61,9 +61,9 @@ func (client *Client) doRequest(httpRequest *http.Request, responseBody interfac
 		}
 	}
 
-	log.Printf("[DEBUG] %v %v => HTTP %v %v: %#v",
+	log.Printf("[DEBUG] %v %v => HTTP %v: %#v",
 		httpRequest.Method, httpRequest.URL,
-		httpResponse.StatusCode, httpResponse.Status,
+		httpResponse.Status,
 		responseBody,
 	)
 
