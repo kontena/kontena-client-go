@@ -12,7 +12,7 @@ import (
 )
 
 // Calls ConnectOAuth2() to update the config.LoginToken.
-func (config *Config) MakeClient() (*Client, error) {
+func (config Config) MakeClient() (*Client, error) {
 	var client = Client{
 		config: config,
 	}
@@ -23,7 +23,7 @@ func (config *Config) MakeClient() (*Client, error) {
 		client.apiURL = apiURL
 	}
 
-	if httpClient, err := config.ConnectOAuth2(); err != nil {
+	if httpClient, err := config.oauthClient(); err != nil {
 		return nil, err
 	} else {
 		client.httpClient = httpClient
@@ -37,7 +37,7 @@ func (config *Config) MakeClient() (*Client, error) {
 }
 
 type Client struct {
-	config     *Config
+	config     Config
 	httpClient *http.Client
 	apiURL     *url.URL
 
@@ -57,7 +57,7 @@ func (client *Client) String() string {
 }
 
 func (client *Client) Config() Config {
-	return *client.config
+	return client.config
 }
 
 func (client *Client) url(path ...string) *url.URL {

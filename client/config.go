@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -15,8 +14,7 @@ type Config struct {
 	URL          string
 	ClientID     string // default OAUTH2_CLIENT_ID
 	ClientSecret string // default OAUTH2_CLIENT_SECRET
-	LoginCode    string // single-use oauth2 code, exchanged for an oauth2 token stored in LoginToken
-	LoginToken   string // oauth2 token, type is always Bearer
+	Token        *Token
 }
 
 func (config Config) makeURL(path ...string) (*url.URL, error) {
@@ -29,14 +27,8 @@ func (config Config) makeURL(path ...string) (*url.URL, error) {
 	}
 }
 
-// Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
-//
-// If an AccessToken is given, use the given token.
-// If an InitialAdminCode is given, exchange it for an oauth2 token, and store that back in AccessToken.
-//
-// Modifies the *Config to update the AccessToken as necessary.
-func (config *Config) ConnectOAuth2() (*http.Client, error) {
-	var oauthConfig = &oauth2.Config{
+func (config Config) oauthConfig() (*oauth2.Config, error) {
+	var oauthConfig = oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
 	}
@@ -61,31 +53,33 @@ func (config *Config) ConnectOAuth2() (*http.Client, error) {
 		oauthConfig.Endpoint.TokenURL = tokenURL.String()
 	}
 
-	// resolve token
-	var oauthToken *oauth2.Token
+	return &oauthConfig, nil
+}
 
-	if config.LoginToken != "" {
-		// use given token
-		oauthToken = &oauth2.Token{
-			AccessToken: config.LoginToken,
-		}
-	} else if config.LoginCode != "" {
-		if token, err := oauthConfig.Exchange(context.TODO(), config.LoginCode); err != nil {
-			return nil, fmt.Errorf("Invalid oauth2 LoginCode: %v", err)
-		} else {
-			oauthToken = token
-
-			log.Printf("[INFO] Exchange oauth2 code %v for oauth2 token: %#v", config.LoginCode, token)
-
-			// update config
-			config.LoginCode = "" // single-use
-			config.LoginToken = token.AccessToken
-		}
+// Exchange a single-use oauth2 code for an access token
+// This does not need to have any config.Token set
+func (config Config) ExchangeToken(code string) (*Token, error) {
+	if oauthConfig, err := config.oauthConfig(); err != nil {
+		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
+	} else if oauthToken, err := oauthConfig.Exchange(context.TODO(), code); err != nil {
+		return nil, fmt.Errorf("Invalid oauth2 code: %v", err)
 	} else {
-		return nil, fmt.Errorf("No oauth2 LoginToken or LoginCode given")
+		return (*Token)(oauthToken), nil
 	}
+}
 
-	var httpClient = oauthConfig.Client(context.TODO(), oauthToken)
+// Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
+//
+// If an AccessToken is given, use the given token.
+// If an InitialAdminCode is given, exchange it for an oauth2 token, and store that back in AccessToken.
+//
+// Modifies the *Config to update the AccessToken as necessary.
+func (config Config) oauthClient() (*http.Client, error) {
+	if oauthConfig, err := config.oauthConfig(); err != nil {
+		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
+	} else {
+		var httpClient = oauthConfig.Client(context.TODO(), (*oauth2.Token)(config.Token))
 
-	return httpClient, nil
+		return httpClient, nil
+	}
 }

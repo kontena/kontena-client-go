@@ -26,8 +26,10 @@ func makeTest() *test {
 	test.mux = http.NewServeMux()
 	test.server = httptest.NewServer(test.mux)
 	test.config = Config{
-		URL:        test.server.URL,
-		LoginToken: testLoginToken,
+		URL: test.server.URL,
+		Token: &Token{
+			AccessToken: testLoginToken,
+		},
 	}
 
 	if client, err := test.config.MakeClient(); err != nil {
