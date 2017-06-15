@@ -29,7 +29,11 @@ func (err Error) Error() string {
 }
 
 type NotFoundError Error
+type ForbiddenError Error
 
 func (err NotFoundError) Error() string {
+	return Error(err).Error()
+}
+func (err ForbiddenError) Error() string {
 	return Error(err).Error()
 }

@@ -138,6 +138,8 @@ func (request request) decodeResponse(httpRequest *http.Request, httpResponse *h
 	switch httpResponse.StatusCode {
 	case 200, 201:
 		return nil
+	case 403:
+		return ForbiddenError(responseError)
 	case 404:
 		return NotFoundError(responseError)
 	default:
