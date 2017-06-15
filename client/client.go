@@ -51,11 +51,13 @@ type Client struct {
 	httpClient *http.Client
 	apiURL     *url.URL
 
+	Users UsersAPI
 	Grids GridsAPI
 	Nodes NodesAPI
 }
 
 func (client *Client) init() error {
+	client.Users = usersClient{client}
 	client.Grids = gridsClient{client}
 	client.Nodes = nodesClient{client}
 
