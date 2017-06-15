@@ -36,6 +36,16 @@ func (config Config) MakeClient() (*Client, error) {
 	return &client, nil
 }
 
+func (config Config) Connect() (*Client, error) {
+	if client, err := config.MakeClient(); err != nil {
+		return nil, err
+	} else if err := client.Ping(); err != nil {
+		return nil, err
+	} else {
+		return client, nil
+	}
+}
+
 type Client struct {
 	config     Config
 	httpClient *http.Client
