@@ -56,8 +56,9 @@ func (config Config) oauthConfig() (*oauth2.Config, error) {
 	return &oauthConfig, nil
 }
 
-// Exchange a single-use oauth2 code for an access token
-// This does not need to have any config.Token set
+// Exchange a single-use oauth2 code for an access token.
+//
+// This does not need to have any config.Token set.
 func (config Config) ExchangeToken(code string) (*Token, error) {
 	if oauthConfig, err := config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
@@ -70,10 +71,9 @@ func (config Config) ExchangeToken(code string) (*Token, error) {
 
 // Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
 //
-// If an AccessToken is given, use the given token.
-// If an InitialAdminCode is given, exchange it for an oauth2 token, and store that back in AccessToken.
+// This requires the config.Token to be set.
 //
-// Modifies the *Config to update the AccessToken as necessary.
+// XXX: if the token expires, then oauth2 refreshes it, and the caller needs to persist that...?
 func (config Config) oauthClient() (*http.Client, error) {
 	if oauthConfig, err := config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
