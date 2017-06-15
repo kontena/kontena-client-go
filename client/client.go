@@ -11,25 +11,41 @@ import (
 	"strings"
 )
 
+// Calls ConnectOAuth2() to update the config.LoginToken.
+func (config *Config) MakeClient() (*Client, error) {
+	var client = Client{
+		config: config,
+	}
+
+	if apiURL, err := config.makeURL(); err != nil {
+		return nil, fmt.Errorf("Invalid API URL %v: %v", config.URL, err)
+	} else {
+		client.apiURL = apiURL
+	}
+
+	if httpClient, err := config.ConnectOAuth2(); err != nil {
+		return nil, err
+	} else {
+		client.httpClient = httpClient
+	}
+
+	if err := client.init(); err != nil {
+		return nil, err
+	}
+
+	return &client, nil
+}
+
 type Client struct {
-	config     Config
-	apiURL     *url.URL
+	config     *Config
 	httpClient *http.Client
+	apiURL     *url.URL
 
 	Grids GridsAPI
 	Nodes NodesAPI
 }
 
-func (client *Client) init(config Config) error {
-	client.config = config
-	client.httpClient = config.httpClient()
-
-	if apiURL, err := config.makeURL(); err != nil {
-		return fmt.Errorf("Invalid URL: %v", err)
-	} else {
-		client.apiURL = apiURL
-	}
-
+func (client *Client) init() error {
 	client.Grids = gridsClient{client}
 	client.Nodes = nodesClient{client}
 
@@ -41,7 +57,7 @@ func (client *Client) String() string {
 }
 
 func (client *Client) Config() Config {
-	return client.config
+	return *client.config
 }
 
 func (client *Client) url(path ...string) *url.URL {

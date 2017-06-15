@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const testAccessToken = "0123456789abcdef"
+const testLoginToken = "0123456789abcdef"
 
 type test struct {
 	mux    *http.ServeMux
@@ -26,8 +26,8 @@ func makeTest() *test {
 	test.mux = http.NewServeMux()
 	test.server = httptest.NewServer(test.mux)
 	test.config = Config{
-		URL:         test.server.URL,
-		AccessToken: testAccessToken,
+		URL:        test.server.URL,
+		LoginToken: testLoginToken,
 	}
 
 	if client, err := test.config.MakeClient(); err != nil {
