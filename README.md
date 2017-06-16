@@ -1,4 +1,4 @@
-![Kontena Gopher](doc/kontena-gopher.jpg?raw=true "Kontena Gopher") *(Gopher Logo CC BY 3.0: Renee French)*
+<img src="doc/kontena-gopher.jpg?raw=true" title="Kontena Gopher" alt="Kontena Gopher" width="50%"> *(Gopher Logo CC BY 3.0: Renee French)*
 
 # `github.com/kontena/kontena-client-go`
 
