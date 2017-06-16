@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/kontena/terraform-provider-kontena/client/test-data"
+	"github.com/kontena/kontena-client-go/client/test-data"
 )
 
 func TestNodeIDString(t *testing.T) {

@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/kontena/terraform-provider-kontena/api"
+	"github.com/kontena/kontena-client-go/api"
 )
 
 func (client *Client) Ping() error {

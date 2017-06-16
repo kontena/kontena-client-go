@@ -1,6 +1,6 @@
 package client
 
-import "github.com/kontena/terraform-provider-kontena/api"
+import "github.com/kontena/kontena-client-go/api"
 
 type UsersAPI interface {
 	GetUser() (api.User, error)

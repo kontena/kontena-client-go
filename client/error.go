@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kontena/terraform-provider-kontena/api"
+	"github.com/kontena/kontena-client-go/api"
 )
 
 type Error struct {

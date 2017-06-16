@@ -3,7 +3,7 @@ package test_data
 import (
 	"time"
 
-	"github.com/kontena/terraform-provider-kontena/api"
+	"github.com/kontena/kontena-client-go/api"
 )
 
 var Node = api.Node{
