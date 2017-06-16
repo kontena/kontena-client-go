@@ -77,6 +77,8 @@ func (config Config) ExchangeToken(code string) (*Token, error) {
 func (config Config) oauthClient() (*http.Client, error) {
 	if oauthConfig, err := config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
+	} else if config.Token == nil {
+		return nil, fmt.Errorf("Missing oauth2 token")
 	} else {
 		var httpClient = oauthConfig.Client(context.TODO(), (*oauth2.Token)(config.Token))
 
