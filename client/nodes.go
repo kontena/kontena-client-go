@@ -41,9 +41,9 @@ type nodesClient struct {
 }
 
 func (nodesClient nodesClient) List(grid string) ([]api.Node, error) {
-	var nodes []api.Node
+	var nodes api.NodesGET
 
-	return nodes, nodesClient.client.get(request{ResponseBody: &nodes}, "/v1/grids", grid, "nodes")
+	return nodes.Nodes, nodesClient.client.get(request{ResponseBody: &nodes}, "/v1/grids", grid, "nodes")
 }
 
 func (nodesClient nodesClient) Get(id NodeID) (api.Node, error) {

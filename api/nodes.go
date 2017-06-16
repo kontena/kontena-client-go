@@ -32,6 +32,10 @@ type Node struct {
 	// resource_usage
 }
 
+type NodesGET struct {
+	Nodes []Node
+}
+
 type NodePUT struct {
 	Labels *NodeLabels `json:"labels,omitempty"`
 }
