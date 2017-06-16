@@ -20,17 +20,31 @@ func printGrids(grids []api.Grid) {
 	tbl.Print()
 }
 
+func listGrids() error {
+	if grids, err := globalClient.Grids.List(); err != nil {
+		return err
+	} else {
+		printGrids(grids)
+	}
+
+	return nil
+}
+
+func showGrid(name string) error {
+	if grid, err := globalClient.Grids.Get(name); err != nil {
+		return err
+	} else if err := print(grid); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var gridsListCommand = cli.Command{
 	Name:  "list",
 	Usage: "List Grids",
 	Action: func(c *cli.Context) error {
-		if grids, err := globalClient.Grids.List(); err != nil {
-			return err
-		} else {
-			printGrids(grids)
-		}
-
-		return nil
+		return listGrids()
 	},
 }
 
@@ -44,9 +58,7 @@ var gridsShowCommand = cli.Command{
 		}
 
 		for _, arg := range c.Args() {
-			if grid, err := globalClient.Grids.Get(arg); err != nil {
-				return err
-			} else if err := print(grid); err != nil {
+			if err := showGrid(arg); err != nil {
 				return err
 			}
 		}
