@@ -19,6 +19,25 @@ var nodesListCommand = cli.Command{
 	},
 }
 
+var nodesShowCommand = cli.Command{
+	Name:      "show",
+	Usage:     "Show Nodes",
+	ArgsUsage: "<node>...",
+	Action: func(c *cli.Context) error {
+		if len(c.Args()) == 0 {
+			return cli.NewExitError("Usage: kontena-cli node show <name>", 1)
+		}
+
+		for _, arg := range c.Args() {
+			if err := kontenaCliNodes.Show(arg); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	},
+}
+
 var nodesCommand = cli.Command{
 	Name:  "node",
 	Usage: "Kontena Nodes",
@@ -38,5 +57,6 @@ var nodesCommand = cli.Command{
 	},
 	Subcommands: []cli.Command{
 		nodesListCommand,
+		nodesShowCommand,
 	},
 }
