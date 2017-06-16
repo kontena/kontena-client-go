@@ -28,6 +28,11 @@ type Grid struct {
 	Subnet          string
 	Supernet        string
 	Logs            *GridLogs
+
+	NodeCount      int `json:"node_count"`
+	ServiceCount   int `json:"service_count"`
+	ContainerCount int `json:"container_count"`
+	UserCount      int `json:"user_count"`
 }
 
 func (grid Grid) String() string {
