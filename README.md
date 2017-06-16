@@ -1,4 +1,4 @@
-![Kontena Gopher](doc/kontena-gopher.jpg.jpg?raw=true "Kontena Gopher") *(Gopher Logo CC BY 3.0: Renee French)*
+![Kontena Gopher](doc/kontena-gopher.jpg?raw=true "Kontena Gopher") *(Gopher Logo CC BY 3.0: Renee French)*
 
 # `github.com/kontena/kontena-client-go`
 
