@@ -1,10 +1,18 @@
 package test_data
 
-import "github.com/kontena/terraform-provider-kontena/api"
+import (
+	"time"
+
+	"github.com/kontena/terraform-provider-kontena/api"
+)
 
 var Node = api.Node{
 	ID:            "VAHL:WEKY:EVK7:7WUJ:2SQY:B5T7:36TT:NTUL:7CHW:XJA5:KBHL:RSTU",
 	Connected:     true,
+	CreatedAt:     api.Time(time.Date(2017, 6, 15, 21, 12, 26, 845000000, time.UTC)),
+	UpdatedAt:     api.Time(time.Date(2017, 6, 16, 8, 0, 4, 458000000, time.UTC)),
+	ConnectedAt:   api.Time(time.Date(2017, 6, 15, 21, 49, 4, 650000000, time.UTC)),
+	LastSeenAt:    api.Time(time.Date(2017, 6, 16, 8, 0, 10, 588000000, time.UTC)),
 	Name:          "terraform-test-node1",
 	OS:            "Container Linux by CoreOS 1353.8.0 (Ladybug)",
 	EngineRootDir: "/var/lib/docker",
