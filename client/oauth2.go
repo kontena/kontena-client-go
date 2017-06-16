@@ -1,6 +1,10 @@
 package client
 
-import "golang.org/x/oauth2"
+import (
+	"fmt"
+
+	"golang.org/x/oauth2"
+)
 
 const (
 	// generate using many fair dice rolls
@@ -10,8 +14,14 @@ const (
 
 type Token oauth2.Token
 
-func MakeToken(accessToken string) *Token {
-	return (*Token)(&oauth2.Token{
+func MakeToken(accessToken string) (*Token, error) {
+	if accessToken == "" {
+		return nil, fmt.Errorf("Empty oauth2 token")
+	}
+
+	var oauthToken = &oauth2.Token{
 		AccessToken: accessToken,
-	})
+	}
+
+	return (*Token)(oauthToken), nil
 }
