@@ -1,0 +1,103 @@
+{
+   "agent_version" : "1.3.0",
+   "overlay_ip" : "10.81.0.1",
+   "connected_at" : "2017-06-15T21:49:04.650+00:00",
+   "os" : "Container Linux by CoreOS 1353.8.0 (Ladybug)",
+   "last_seen_at" : "2017-06-16T08:00:10.588Z",
+   "network_drivers" : [
+      {
+         "name" : "overlay",
+         "version" : null
+      },
+      {
+         "name" : "null",
+         "version" : null
+      },
+      {
+         "name" : "host",
+         "version" : null
+      },
+      {
+         "version" : null,
+         "name" : "bridge"
+      }
+   ],
+   "id" : "VAHL:WEKY:EVK7:7WUJ:2SQY:B5T7:36TT:NTUL:7CHW:XJA5:KBHL:RSTU",
+   "connected" : true,
+   "mem_limit" : 0,
+   "node_number" : 1,
+   "initial_member" : true,
+   "private_ip" : "138.68.79.119",
+   "grid" : {
+      "name" : "test",
+      "id" : "test",
+      "supernet" : "10.80.0.0/12",
+      "initial_size" : 1,
+      "stats" : {
+         "statsd" : null
+      },
+      "subnet" : "10.81.0.0/16",
+      "trusted_subnets" : [],
+      "token" : "baCPXomhZucwpRVmNcdPBTvQ9YinRXZyxODrK3UBMxd5Rjjuw0rx5MdG6YzN9q/AwpU1vch0k8rcaG/4qt+mpw=="
+   },
+   "peer_ips" : [
+      "138.68.94.29"
+   ],
+   "labels" : [
+      "provider=digitalocean",
+      "node-index=1",
+      "region=fra1",
+      "az=fra1"
+   ],
+   "engine_root_dir" : "/var/lib/docker",
+   "public_ip" : "138.68.79.119",
+   "resource_usage" : {
+      "cpu" : {
+         "num_cores" : 1,
+         "idle" : 83.1454829200624,
+         "nice" : 0,
+         "user" : 10.5600832321831,
+         "system" : 6.29443384775447
+      },
+      "filesystem" : [
+         {
+            "total" : 28730269696,
+            "free" : 28287725568,
+            "available" : 27059896320,
+            "used" : 442544128,
+            "name" : "/var/lib/docker"
+         }
+      ],
+      "usage" : {
+         "container_seconds" : 270
+      },
+      "load" : {
+         "15m" : 0.21240234375,
+         "1m" : 1.068359375,
+         "5m" : 0.5537109375
+      },
+      "memory" : {
+         "inactive" : 442466304,
+         "used" : 965246976,
+         "total" : 1045307392,
+         "cached" : 536813568,
+         "buffers" : 52416512,
+         "free" : 80060416,
+         "active" : 355991552
+      }
+   },
+   "cpus" : 1,
+   "mem_total" : 1045307392,
+   "docker_version" : "1.12.6",
+   "name" : "terraform-test-node1",
+   "driver" : "overlay",
+   "created_at" : "2017-06-15T21:12:26.845Z",
+   "updated_at" : "2017-06-16T08:00:04.458Z",
+   "volume_drivers" : [
+      {
+         "name" : "local",
+         "version" : null
+      }
+   ],
+   "kernel_version" : "4.9.24-coreos"
+}

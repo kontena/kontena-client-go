@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -39,6 +40,18 @@ func makeTest() *test {
 	}
 
 	return &test
+}
+
+func (test *test) mockGET(path string, filename string) {
+	fileData, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		w.Write(fileData)
+	})
 }
 
 func TestPing(t *testing.T) {

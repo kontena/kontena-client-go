@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/kontena/terraform-provider-kontena/client/test-data"
 )
 
 func TestNodeIDString(t *testing.T) {
@@ -20,4 +22,17 @@ func testNodeIDParse(t *testing.T, expected NodeID, id string) {
 
 func TestNodeIDParse(t *testing.T) {
 	testNodeIDParse(t, NodeID{Grid: "grid", Name: "name"}, "grid/name")
+}
+
+func TestNodeGet(t *testing.T) {
+	var test = makeTest()
+	var testNode = test_data.Node
+
+	test.mockGET("/v1/nodes/test/node1", "test-data/node.json")
+
+	if node, err := test.client.Nodes.Get(NodeID{"test", "node1"}); err != nil {
+		t.Fatalf("node get error: %v", err)
+	} else {
+		assert.Equal(t, testNode, node, "response node")
+	}
 }
