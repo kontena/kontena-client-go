@@ -6,6 +6,12 @@ import (
 	"github.com/urfave/cli"
 )
 
+var gridFlag = cli.StringFlag{
+	Name:        "grid",
+	EnvVar:      "KONTENA_GRID",
+	Destination: &Options.Grid,
+}
+
 func printGrids(grids []api.Grid) {
 	tbl := table.New("Name", "Nodes", "Services", "Users")
 
@@ -21,7 +27,7 @@ func printGrids(grids []api.Grid) {
 }
 
 func listGrids() error {
-	if grids, err := globalClient.Grids.List(); err != nil {
+	if grids, err := Client.Grids.List(); err != nil {
 		return err
 	} else {
 		printGrids(grids)
@@ -31,7 +37,7 @@ func listGrids() error {
 }
 
 func showGrid(name string) error {
-	if grid, err := globalClient.Grids.Get(name); err != nil {
+	if grid, err := Client.Grids.Get(name); err != nil {
 		return err
 	} else if err := print(grid); err != nil {
 		return err
