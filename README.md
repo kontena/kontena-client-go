@@ -2,6 +2,45 @@
 
 Golang Kontena API client library.
 
+## Usage / Examples
+
+### `cli/commands`
+
+Referr to the `cli/commands` package for examples showing how to implement the familar `kontena` CLI commands using the `client` and `api` package interface.
+
+### `cmd/kontena-cli`
+
+An example implementation of the Kontena CLI using the `cli/commands` packages.
+
+***This is not and is not intended to be a replacement for the official Kontena CLI. It is only intended as an example application for using the `client` package!***
+
+```
+kontena-cli --help
+NAME:
+   kontena-cli - Kontena CLI
+
+USAGE:
+   kontena-cli [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.0
+
+COMMANDS:
+     whoami   Show kontena master user
+     grid     Kontena Grids
+     node     Kontena Nodes
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --debug         [$KONTENA_DEBUG]
+   --verbose      
+   --quiet        
+   --url value     [$KONTENA_URL]
+   --token value   [$KONTENA_TOKEN]
+   --help, -h     show help
+   --version, -v  print the version
+```
+
 ## Packages
 
 ### `github.com/kontena/kontena-client-go/api`
@@ -14,9 +53,13 @@ Kontena Client struct, API interfaces.
 
 Includes support for OAuth2 tokens and code exchanges.
 
-### `github.com/kontena/kontena-client-go/cli`
+### `github.com/kontena/kontena-client-go/cli` `github.com/kontena/kontena-client-go/cli/command`
 
 Example application for using the `api` and `client` packages.
+
+### `github.com/kontena/kontena-client-go/cmd/kontena-cli`
+
+Wrapper for the `cli` package commands.
 
 ## Supported APIs
 
