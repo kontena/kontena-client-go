@@ -15,7 +15,7 @@ var nodesListCommand = cli.Command{
 	Name:  "list",
 	Usage: "List Nodes",
 	Action: func(c *cli.Context) error {
-		return kontenaCliNodes.ListNodes()
+		return kontenaCliNodes.List()
 	},
 }
 

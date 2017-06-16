@@ -46,7 +46,7 @@ type NodesCommand struct {
 	Grid string
 }
 
-func (cmd NodesCommand) ListNodes() error {
+func (cmd NodesCommand) List() error {
 	if nodes, err := cmd.client.Nodes.List(cmd.Grid); err != nil {
 		return err
 	} else {
