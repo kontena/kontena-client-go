@@ -6,7 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func print(object interface{}) error {
+func Print(object interface{}) error {
 	if out, err := yaml.Marshal(object); err != nil {
 		return err
 	} else {

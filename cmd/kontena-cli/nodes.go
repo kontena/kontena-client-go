@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	kontena_cli "github.com/kontena/kontena-client-go/cli"
+	"github.com/kontena/kontena-client-go/cli/commands"
 	"github.com/urfave/cli"
 )
 
-var kontenaCliNodes = kontena_cli.NodesCommand{
+var kontenaCliNodes = commands.NodesCommand{
 	CLI: &kontenaCli,
 }
 

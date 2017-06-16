@@ -1,11 +1,12 @@
-package cli
+package commands
 
 import (
 	"github.com/kontena/kontena-client-go/api"
+	"github.com/kontena/kontena-client-go/cli"
 )
 
 func printGrids(grids []api.Grid) {
-	tbl := makeTable("Name", "Nodes", "Services", "Users")
+	tbl := cli.Table("Name", "Nodes", "Services", "Users")
 
 	for _, grid := range grids {
 		tbl.AddRow(grid.Name,
@@ -19,11 +20,11 @@ func printGrids(grids []api.Grid) {
 }
 
 type GridsCommand struct {
-	*CLI
+	*cli.CLI
 }
 
 func (cmd GridsCommand) List() error {
-	if grids, err := cmd.client.Grids.List(); err != nil {
+	if grids, err := cmd.Client.Grids.List(); err != nil {
 		return err
 	} else {
 		printGrids(grids)
@@ -33,11 +34,9 @@ func (cmd GridsCommand) List() error {
 }
 
 func (cmd GridsCommand) Show(name string) error {
-	if grid, err := cmd.client.Grids.Get(name); err != nil {
+	if grid, err := cmd.Client.Grids.Get(name); err != nil {
 		return err
-	} else if err := print(grid); err != nil {
-		return err
+	} else {
+		return cli.Print(grid)
 	}
-
-	return nil
 }

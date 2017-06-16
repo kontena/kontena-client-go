@@ -1,12 +1,12 @@
 package main
 
 import (
-	kontena_cli "github.com/kontena/kontena-client-go/cli"
+	"github.com/kontena/kontena-client-go/cli/commands"
 
 	"github.com/urfave/cli"
 )
 
-var kontenaCliGrids = kontena_cli.GridsCommand{
+var kontenaCliGrids = commands.GridsCommand{
 	CLI: &kontenaCli,
 }
 

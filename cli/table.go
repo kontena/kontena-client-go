@@ -10,6 +10,6 @@ func init() {
 	table.DefaultFirstColumnFormatter = color.New(color.Bold).SprintfFunc()
 }
 
-func makeTable(columnHeaders ...interface{}) table.Table {
+func Table(columnHeaders ...interface{}) table.Table {
 	return table.New(columnHeaders)
 }
