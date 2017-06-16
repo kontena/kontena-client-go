@@ -3,42 +3,28 @@ package main
 import (
 	"os"
 
+	kontena_cli "github.com/kontena/kontena-client-go/cli"
 	"github.com/kontena/kontena-client-go/client"
-	"github.com/op/go-logging"
 	"github.com/urfave/cli"
 )
 
-var Config client.Config
-var Options options
-var Client *client.Client
+var kontenaCli kontena_cli.CLI
+var log = kontena_cli.Logger()
 
 func beforeApp(c *cli.Context) error {
-	if Options.Debug {
-		logging.SetLevel(logging.DEBUG, "kontena-cli")
-	} else if Options.Verbose {
-		logging.SetLevel(logging.INFO, "kontena-cli")
-	} else if Options.Quiet {
-		logging.SetLevel(logging.ERROR, "kontena-cli")
-	} else {
-		logging.SetLevel(logging.WARNING, "kontena-cli")
-	}
-
-	if clientToken, err := client.MakeToken(Options.Token); err != nil {
+	if clientToken, err := client.MakeToken(kontenaCli.Options.Token); err != nil {
 		return err
 	} else {
-		Config.Token = clientToken
+		kontenaCli.Config.Token = clientToken
 	}
 
-	log.Debugf("app config: %#v", Config)
+	log.Debugf("Config: %#v", kontenaCli.Config)
 
-	if client, err := Config.Connect(); err != nil {
+	if err := kontenaCli.Connect(); err != nil {
 		return err
-	} else {
-		Client = client
 	}
 
 	return nil
-
 }
 
 func app() *cli.App {
@@ -49,25 +35,25 @@ func app() *cli.App {
 		cli.BoolFlag{
 			Name:        "debug",
 			EnvVar:      "KONTENA_DEBUG",
-			Destination: &Options.Debug,
+			Destination: &kontenaCli.Options.Debug,
 		},
 		cli.BoolFlag{
 			Name:        "verbose",
-			Destination: &Options.Verbose,
+			Destination: &kontenaCli.Options.Verbose,
 		},
 		cli.BoolFlag{
 			Name:        "quiet",
-			Destination: &Options.Quiet,
+			Destination: &kontenaCli.Options.Quiet,
 		},
 		cli.StringFlag{
 			Name:        "url",
 			EnvVar:      "KONTENA_URL",
-			Destination: &Config.URL,
+			Destination: &kontenaCli.Config.URL,
 		},
 		cli.StringFlag{
 			Name:        "token",
 			EnvVar:      "KONTENA_TOKEN",
-			Destination: &Options.Token,
+			Destination: &kontenaCli.Options.Token,
 		},
 	}
 	app.Before = beforeApp

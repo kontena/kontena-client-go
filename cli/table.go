@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"github.com/fatih/color"
@@ -8,4 +8,8 @@ import (
 func init() {
 	table.DefaultHeaderFormatter = color.New(color.Underline).SprintfFunc()
 	table.DefaultFirstColumnFormatter = color.New(color.Bold).SprintfFunc()
+}
+
+func makeTable(columnHeaders ...interface{}) table.Table {
+	return table.New(columnHeaders)
 }
