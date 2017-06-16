@@ -34,6 +34,10 @@ func (grid Grid) String() string {
 	return grid.ID
 }
 
+type GridsGET struct {
+	Grids []Grid
+}
+
 type GridPOST struct {
 	// Required
 	Name        string `json:"name"`
