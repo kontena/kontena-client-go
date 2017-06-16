@@ -1,16 +1,43 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/kontena/kontena-client-go/api"
 	"github.com/rodaine/table"
 	"github.com/urfave/cli"
 )
 
+func nodeStatus(node api.Node) string {
+	if node.Connected {
+		return "online"
+	} else {
+		return "offline"
+	}
+}
+
+func nodeInitial(node api.Node) string {
+	if node.InitialMember {
+		return fmt.Sprintf("%d / %d", node.NodeNumber, node.Grid.InitialSize)
+	} else {
+		return "-"
+	}
+}
+
+func nodeLabels(node api.Node) string {
+	return strings.Join(node.Labels, ",")
+}
+
 func printNodes(nodes []api.Node) {
 	tbl := table.New("Name", "Version", "Status", "Initial", "Labels")
 
 	for _, node := range nodes {
-		tbl.AddRow(node.Name)
+		tbl.AddRow(node.Name,
+			node.AgentVersion,
+			nodeStatus(node),
+			nodeInitial(node),
+		)
 	}
 
 	tbl.Print()
