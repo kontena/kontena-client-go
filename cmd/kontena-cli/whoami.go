@@ -1,21 +1,23 @@
 package main
 
 import (
-  "fmt"
-	"github.com/spf13/cobra"
+	"fmt"
+
+	"github.com/urfave/cli"
 )
 
-var whoamiCommand = &cobra.Command{
-	Use:   "whoami",
-	Short: "Show kontena master user",
-	RunE: func(cmd *cobra.Command, args []string) error {
-    if user, err := cli.client.Users.GetUser(); err != nil {
-      return err
-    } else {
-      fmt.Printf("URL: %v\n", cli.client.String())
-      fmt.Printf("User: %v\n", user.Name)
-    }
+var whoamiCommand = cli.Command{
+	Name:  "whoami",
+	Usage: "Show kontena master user",
+	Action: func(c *cli.Context) error {
+    fmt.Printf("URL: %v\n", globalClient.String())
+    
+		if user, err := globalClient.Users.GetUser(); err != nil {
+			return err
+		} else {
+			fmt.Printf("User: %v\n", user.Name)
+		}
 
-    return nil
+		return nil
 	},
 }

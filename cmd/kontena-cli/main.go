@@ -1,54 +1,64 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/kontena/kontena-client-go/client"
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli"
 )
 
+var config client.Config
 var options struct {
 	Token string
 }
 
-var cli struct {
-	config client.Config
-	client *client.Client
+var globalClient *client.Client
+
+func beforeApp(c *cli.Context) error {
+	if clientToken, err := client.MakeToken(options.Token); err != nil {
+		return err
+	} else {
+		config.Token = clientToken
+	}
+
+	log.Printf("[DEBUG] config: %#v", config)
+
+	if client, err := config.Connect(); err != nil {
+		return err
+	} else {
+		globalClient = client
+	}
+
+	return nil
+
 }
 
-var rootCommand = &cobra.Command{
-	Use: "kontena",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if clientToken, err := client.MakeToken(options.Token); err != nil {
-			return err
-		} else {
-			cli.config.Token = clientToken
-		}
+func app() *cli.App {
+	app := cli.NewApp()
+	app.Name = "kontena-cli"
+	app.Usage = "Kontena CLI"
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "url",
+			EnvVar:      "KONTENA_URL",
+			Destination: &config.URL,
+		},
+		cli.StringFlag{
+			Name:        "token",
+			EnvVar:      "KONTENA_TOKEN",
+			Destination: &options.Token,
+		},
+	}
+	app.Before = beforeApp
+	app.Commands = []cli.Command{
+		whoamiCommand,
+		gridsCommand,
+	}
 
-		log.Printf("[DEBUG] config: %#v", cli.config)
-
-		if client, err := cli.config.Connect(); err != nil {
-			return err
-		} else {
-			cli.client = client
-		}
-
-		return nil
-	},
-}
-
-func init() {
-	rootCommand.PersistentFlags().StringVar(&cli.config.URL, "url", "", "HTTP URL to kontena-server API")
-	rootCommand.PersistentFlags().StringVar(&options.Token, "token", "", "OAuth2 token")
-
-	rootCommand.AddCommand(whoamiCommand)
+	return app
 }
 
 func main() {
-	if err := rootCommand.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	app().Run(os.Args)
 }
