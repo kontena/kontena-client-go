@@ -38,6 +38,48 @@ func TestNodeGet(t *testing.T) {
 	}
 }
 
+func testNodeCreate(t *testing.T, id NodeID, params api.NodePOST, mockRequest mockJSON) {
+	var test = makeTest()
+
+	test.mockPOST(t, "/v1/grids/"+id.Grid+"/nodes", func(request mockJSON) interface{} {
+		assert.Equal(t, mockRequest, request, "POST /v1/grids/"+id.Grid+"/nodes JSON")
+
+		return api.Node{ID: id.String()}
+	})
+
+	if node, err := test.client.Nodes.Create(id.Grid, params); err != nil {
+		t.Fatalf("nodes create error: %v", err)
+	} else {
+		assert.Equal(t, node.ID, id.String())
+	}
+}
+
+func TestNodeCreate(t *testing.T) {
+	var nodeParams = api.NodePOST{Name: "test-create"}
+	var mockRequest = parseJSON(`{"name": "test-create"}`)
+
+	testNodeCreate(t, NodeID{"test-grid", "test-create"}, nodeParams, mockRequest)
+}
+
+func TestNodeCreateParams(t *testing.T) {
+	var nodeParams = api.NodePOST{
+		Name:  "test-create-params",
+		Token: "test-secret",
+		Labels: &api.NodeLabels{
+			"test==true",
+		},
+	}
+	var mockRequest = parseJSON(`
+		{
+			"name": "test-create-params",
+			"token": "test-secret",
+			"labels": [ "test==true" ]
+		}
+	`)
+
+	testNodeCreate(t, NodeID{"test-grid", "test-create-params"}, nodeParams, mockRequest)
+}
+
 func testNodeUpdate(t *testing.T, id NodeID, params api.NodePUT, mockRequest mockJSON) {
 	var test = makeTest()
 
