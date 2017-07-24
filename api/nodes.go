@@ -1,14 +1,18 @@
 package api
 
+import (
+	"time"
+)
+
 type NodeLabels []string
 
 type Node struct {
 	ID            string // Docker/Node ID
 	Connected     bool
-	CreatedAt     Time `json:"created_at"`
-	UpdatedAt     Time `json:"updated_at"`
-	ConnectedAt   Time `json:"connected_at"`
-	LastSeenAt    Time `json:"last_seen_at"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	ConnectedAt   time.Time `json:"connected_at"`
+	LastSeenAt    time.Time `json:"last_seen_at"`
 	Name          string
 	OS            string
 	EngineRootDir string `json:"engine_root_dir"`
