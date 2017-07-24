@@ -1,0 +1,32 @@
+{
+   "grids" : [
+      {
+         "id" : "test",
+         "user_count" : 1,
+         "service_count" : 0,
+         "default_affinity" : [
+            "label==test"
+         ],
+         "logs" : {
+            "opts" : {
+               "fluentd-address" : "127.0.0.1"
+            },
+            "forwarder" : "fluentd"
+         },
+         "container_count" : 0,
+         "token" : "5z5....57Q==",
+         "stats" : {
+            "statsd" : {
+               "port" : 8125,
+               "server" : "127.0.0.1"
+            }
+         },
+         "initial_size" : 1,
+         "node_count" : 0,
+         "trusted_subnets" : [],
+         "name" : "test-options",
+         "supernet" : "10.80.0.0/12",
+         "subnet" : "10.79.0.0/16"
+      }
+   ]
+}
