@@ -12,6 +12,8 @@ var kontenaCli kontena_cli.CLI
 var log = kontena_cli.Logger()
 
 func beforeApp(c *cli.Context) error {
+	kontenaCli.Setup()
+
 	if clientToken, err := client.MakeToken(kontenaCli.Options.Token); err != nil {
 		return err
 	} else {

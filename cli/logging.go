@@ -6,29 +6,33 @@ import (
 	"github.com/op/go-logging"
 )
 
-var logFormatter = logging.MustStringFormatter(
-	`%{color} %{level:.4s} %{shortpkg}:%{longfunc}:%{color:reset} %{message}`,
-)
-var logBackend = logging.NewLogBackend(os.Stderr, "", 0)
-
 func init() {
-	logging.SetFormatter(logFormatter)
-	logging.SetBackend(logBackend)
-	logging.SetLevel(logging.DEBUG, "cli")
+	logging.SetFormatter(logging.MustStringFormatter(
+		`%{color} %{level:.4s} %{module}.%{shortfunc}:%{color:reset} %{message}`,
+	))
+	logging.SetBackend(logging.NewLogBackend(os.Stderr, "", 0))
 }
 
-var log = logging.MustGetLogger("cli")
+func makeLogger(options Options, module string) *logging.Logger {
+	var logger = logging.MustGetLogger(module)
 
-func loggingSetup(options Options) {
 	if options.Debug {
-		logging.SetLevel(logging.DEBUG, "kontena-cli")
+		logging.SetLevel(logging.DEBUG, module)
 	} else if options.Verbose {
-		logging.SetLevel(logging.INFO, "kontena-cli")
+		logging.SetLevel(logging.INFO, module)
 	} else if options.Quiet {
-		logging.SetLevel(logging.ERROR, "kontena-cli")
+		logging.SetLevel(logging.ERROR, module)
 	} else {
-		logging.SetLevel(logging.WARNING, "kontena-cli")
+		logging.SetLevel(logging.WARNING, module)
 	}
+
+	return logger
+}
+
+var log = logging.MustGetLogger("kontena-cli")
+
+func setupLogging(options Options) {
+	log = makeLogger(options, "kontena-cli")
 }
 
 func Logger() *logging.Logger {
