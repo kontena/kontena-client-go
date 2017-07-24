@@ -1,4 +1,6 @@
 {
+   "id" : "test/terraform-test-node1",
+   "node_id" : "VAHL:WEKY:EVK7:7WUJ:2SQY:B5T7:36TT:NTUL:7CHW:XJA5:KBHL:RSTU",
    "agent_version" : "1.3.0",
    "overlay_ip" : "10.81.0.1",
    "connected_at" : "2017-06-15T21:49:04.650Z",
@@ -22,7 +24,6 @@
          "name" : "bridge"
       }
    ],
-   "id" : "VAHL:WEKY:EVK7:7WUJ:2SQY:B5T7:36TT:NTUL:7CHW:XJA5:KBHL:RSTU",
    "connected" : true,
    "mem_limit" : 0,
    "node_number" : 1,
