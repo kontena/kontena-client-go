@@ -9,9 +9,11 @@ type GridStats struct {
 	Statsd *GridStatsStatsd `json:"statsd"`
 }
 
+type GridLogsOpts map[string]string
+
 type GridLogs struct {
-	Forwarder string            `json:"forwarder"`
-	Opts      map[string]string `json:"opts"`
+	Forwarder string       `json:"forwarder"`
+	Opts      GridLogsOpts `json:"opts"`
 }
 
 type GridTrustedSubnets []string
@@ -49,13 +51,16 @@ type GridPOST struct {
 	InitialSize int    `json:"initial_size"`
 
 	// Optional
-	Token           *string              `json:"token,omitempty"`
+	Token    string `json:"token,omitempty"`
+	Subnet   string `json:"subnet,omitempty"`
+	Supernet string `json:"supernet,omitempty"`
+
+	// Optional
 	DefaultAffinity *GridDefaultAffinity `json:"default_affinity,omitempty"`
-	Subnet          *string              `json:"subnet,omitempty"`
-	Supernet        *string              `json:"supernet,omitempty"`
 }
 
 type GridPUT struct {
+	// Optional
 	TrustedSubnets  *GridTrustedSubnets  `json:"trusted_subnets,omitempty"`
 	DefaultAffinity *GridDefaultAffinity `json:"default_affinity,omitempty"`
 	Stats           *GridStats           `json:"stats,omitempty"`
