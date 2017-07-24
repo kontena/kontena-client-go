@@ -56,7 +56,10 @@ type GridPOST struct {
 	Supernet string `json:"supernet,omitempty"`
 
 	// Optional
+	TrustedSubnets  *GridTrustedSubnets  `json:"trusted_subnets,omitempty"`
 	DefaultAffinity *GridDefaultAffinity `json:"default_affinity,omitempty"`
+	Stats           *GridStats           `json:"stats,omitempty"`
+	Logs            *GridLogs            `json:"logs,omitempty"`
 }
 
 type GridPUT struct {
