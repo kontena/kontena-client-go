@@ -2,7 +2,7 @@ package api
 
 type GridStatsStatsd struct {
 	Server string `json:"server"`
-	Port   string `json:"port"` // XXX: really?
+	Port   int    `json:"port"`
 }
 
 type GridStats struct {
