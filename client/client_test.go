@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +14,19 @@ import (
 )
 
 const testLoginToken = "0123456789abcdef"
+
+type mockJSON map[string]interface{}
+
+func parseJSON(str string) mockJSON {
+	var buf = bytes.NewBufferString(str)
+	var mock mockJSON
+
+	if err := json.NewDecoder(buf).Decode(&mock); err != nil {
+		panic(err)
+	}
+
+	return mock
+}
 
 type test struct {
 	mux    *http.ServeMux
@@ -51,6 +65,25 @@ func (test *test) mockGET(path string, filename string) {
 	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write(fileData)
+	})
+}
+
+func (test *test) mockPOST(t *testing.T, path string, handler func(request mockJSON) interface{}) {
+	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		var requestPayload map[string]interface{}
+
+		assert.Equal(t, "POST", r.Method, "request method")
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"), "request content-type")
+
+		if err := json.NewDecoder(r.Body).Decode(&requestPayload); err != nil {
+			t.Fatalf("request body json: %v", err)
+		}
+
+		var responsePayload = handler(requestPayload)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(responsePayload)
 	})
 }
 
