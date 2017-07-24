@@ -7,7 +7,8 @@ import (
 type NodeLabels []string
 
 type Node struct {
-	ID            string // Docker/Node ID
+	ID            string // grid/name
+	NodeID        string `json:"node_id"` // Docker ID
 	Connected     bool
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
