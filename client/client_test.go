@@ -56,6 +56,25 @@ func makeTest() *test {
 	return &test
 }
 
+func (test *test) mockRequestWithBody(t *testing.T, method string, path string, handler func(request mockJSON) interface{}) {
+	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		var requestPayload map[string]interface{}
+
+		assert.Equal(t, method, r.Method, "request method")
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"), "request content-type")
+
+		if err := json.NewDecoder(r.Body).Decode(&requestPayload); err != nil {
+			t.Fatalf("request body json: %v", err)
+		}
+
+		var responsePayload = handler(requestPayload)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(responsePayload)
+	})
+}
+
 func (test *test) mockGET(path string, filename string) {
 	fileData, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -69,22 +88,10 @@ func (test *test) mockGET(path string, filename string) {
 }
 
 func (test *test) mockPOST(t *testing.T, path string, handler func(request mockJSON) interface{}) {
-	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		var requestPayload map[string]interface{}
-
-		assert.Equal(t, "POST", r.Method, "request method")
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"), "request content-type")
-
-		if err := json.NewDecoder(r.Body).Decode(&requestPayload); err != nil {
-			t.Fatalf("request body json: %v", err)
-		}
-
-		var responsePayload = handler(requestPayload)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(200)
-		json.NewEncoder(w).Encode(responsePayload)
-	})
+	test.mockRequestWithBody(t, "POST", path, handler)
+}
+func (test *test) mockPUT(t *testing.T, path string, handler func(request mockJSON) interface{}) {
+	test.mockRequestWithBody(t, "PUT", path, handler)
 }
 
 func TestPing(t *testing.T) {
