@@ -15,6 +15,7 @@ type Config struct {
 	ClientID     string // default OAUTH2_CLIENT_ID
 	ClientSecret string // default OAUTH2_CLIENT_SECRET
 	Token        *Token
+	Logger       Logger
 }
 
 func (config Config) makeURL(path ...string) (*url.URL, error) {

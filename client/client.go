@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -14,6 +13,7 @@ import (
 // Calls ConnectOAuth2() to update the config.LoginToken.
 func (config Config) MakeClient() (*Client, error) {
 	var client = Client{
+		logger: config.Logger,
 		config: config,
 	}
 
@@ -47,6 +47,7 @@ func (config Config) Connect() (*Client, error) {
 }
 
 type Client struct {
+	logger     Logger
 	config     Config
 	httpClient *http.Client
 	apiURL     *url.URL
@@ -155,10 +156,12 @@ func (client *Client) request(request request) error {
 	} else {
 		defer httpResponse.Body.Close()
 
-		log.Printf("[DEBUG] %v %v => HTTP %v",
-			httpRequest.Method, httpRequest.URL,
-			httpResponse.Status,
-		)
+		if client.logger != nil {
+			client.logger.Infof("%v %v => HTTP %v",
+				httpRequest.Method, httpRequest.URL,
+				httpResponse.Status,
+			)
+		}
 
 		return request.decodeResponse(httpRequest, httpResponse)
 	}
