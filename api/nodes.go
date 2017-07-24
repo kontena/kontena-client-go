@@ -41,6 +41,12 @@ type NodesGET struct {
 	Nodes []Node
 }
 
+type NodePOST struct {
+	Name   string      `json:"name"`
+	Token  string      `json:"token,omitempty"`
+	Labels *NodeLabels `json:"labels,omitempty"`
+}
+
 type NodePUT struct {
 	Labels *NodeLabels `json:"labels,omitempty"`
 }

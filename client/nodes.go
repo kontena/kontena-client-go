@@ -32,6 +32,7 @@ func (nodeID NodeID) String() string {
 type NodesAPI interface {
 	List(grid string) ([]api.Node, error)
 	Get(id NodeID) (api.Node, error)
+	Create(grid string, params api.NodePOST) (api.Node, error)
 	Update(id NodeID, params api.NodePUT) (api.Node, error)
 	Delete(id NodeID) error
 }
@@ -50,6 +51,12 @@ func (nodesClient nodesClient) Get(id NodeID) (api.Node, error) {
 	var node api.Node
 
 	return node, nodesClient.client.get(request{ResponseBody: &node}, "/v1/nodes", id.String())
+}
+
+func (nodesClient nodesClient) Create(grid string, params api.NodePOST) (api.Node, error) {
+	var node api.Node
+
+	return node, nodesClient.client.post(request{RequestBody: params, ResponseBody: &node}, "/v1/grids", grid, "nodes")
 }
 
 func (nodesClient nodesClient) Update(id NodeID, params api.NodePUT) (api.Node, error) {
