@@ -51,3 +51,63 @@ func TestGridCreate(t *testing.T) {
 		assert.Equal(t, grid.Token, "secret")
 	}
 }
+
+func TestGridCreateOptions(t *testing.T) {
+	var test = makeTest()
+	var gridParams = api.GridPOST{
+		Name:        "test-options",
+		InitialSize: 3,
+		Token:       "secret 2",
+		Subnet:      "10.8.0.0/16",
+		Supernet:    "10.0.0.0/8",
+		TrustedSubnets: &api.GridTrustedSubnets{
+			"192.168.66.0/24",
+		},
+		DefaultAffinity: &api.GridDefaultAffinity{"test==true"},
+		Stats: &api.GridStats{
+			Statsd: &api.GridStatsStatsd{
+				Server: "127.0.0.1",
+				Port:   8125,
+			},
+		},
+		Logs: &api.GridLogs{
+			Forwarder: "test",
+			Opts: api.GridLogsOpts{
+				"server": "localhost",
+			},
+		},
+	}
+	var mockRequest = parseJSON(`
+    {
+      "name":             "test-options",
+      "initial_size":     3,
+      "token":            "secret 2",
+      "subnet":           "10.8.0.0/16",
+      "supernet":         "10.0.0.0/8",
+      "trusted_subnets":  ["192.168.66.0/24"],
+      "default_affinity": ["test==true"],
+      "logs": {
+        "forwarder": "test",
+        "opts": { "server": "localhost" }
+      },
+      "stats": {
+        "statsd": {
+          "server": "127.0.0.1",
+          "port": 8125
+        }
+      }
+    }
+  `)
+
+	test.mockPOST(t, "/v1/grids", func(request mockJSON) interface{} {
+		assert.Equal(t, mockRequest, request, "POST /v1/grids JSON")
+
+		return api.Grid{ID: "test"}
+	})
+
+	if grid, err := test.client.Grids.Create(gridParams); err != nil {
+		t.Fatalf("grids create error: %v", err)
+	} else {
+		assert.Equal(t, grid.ID, "test")
+	}
+}
