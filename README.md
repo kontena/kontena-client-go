@@ -4,6 +4,8 @@
 
 Golang Kontena API client library.
 
+***DISCLAIMER***: This client library is a work in progress, and is intended for use with the Kontena 1.4 development version. 
+
 ## Usage / Examples
 
 ### `./cli/commands`
@@ -57,9 +59,11 @@ Includes support for OAuth2 tokens and code exchanges.
 
 ## API Support
 
-This client library is a work in progress, and support is limited to the following APIs:
+This client library is a work in progress, and support is limited to the following Kontena APIs:
 
 * `/oauth2`
 * `/v1/user`
 * `/v1/grids`
 * `/v1/nodes`
+
+This library is currently compatible with the Kontena 1.4 development version.
