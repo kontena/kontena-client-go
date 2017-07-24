@@ -111,3 +111,46 @@ func TestGridCreateOptions(t *testing.T) {
 		assert.Equal(t, grid.ID, "test")
 	}
 }
+
+func testGridUpdate(t *testing.T, id string, gridParams api.GridPUT, mockRequest mockJSON) {
+	var test = makeTest()
+
+	test.mockPUT(t, "/v1/grids/"+id, func(request mockJSON) interface{} {
+		assert.Equal(t, mockRequest, request, "PUT /v1/grids/"+id+" JSON")
+
+		return api.Grid{ID: id}
+	})
+
+	if grid, err := test.client.Grids.Update(id, gridParams); err != nil {
+		t.Fatalf("grids create error: %v", err)
+	} else {
+		assert.Equal(t, grid.ID, id)
+	}
+}
+
+func TestGridUpdateDefaults(t *testing.T) {
+	var gridParams = api.GridPUT{}
+	var mockRequest = parseJSON(`{}`)
+
+	testGridUpdate(t, "test-defaults", gridParams, mockRequest)
+}
+
+func TestGridUpdateTrustedSubnetsClear(t *testing.T) {
+	var gridParams = api.GridPUT{
+		TrustedSubnets: &api.GridTrustedSubnets{},
+	}
+	var mockRequest = parseJSON(`{"trusted_subnets": []}`)
+
+	testGridUpdate(t, "test-trusted-subnets-clear", gridParams, mockRequest)
+}
+
+func TestGridUpdateTrustedSubnets(t *testing.T) {
+	var gridParams = api.GridPUT{
+		TrustedSubnets: &api.GridTrustedSubnets{
+			"192.168.66.0/24",
+		},
+	}
+	var mockRequest = parseJSON(`{"trusted_subnets": [ "192.168.66.0/24" ]}`)
+
+	testGridUpdate(t, "test-trusted-subnets", gridParams, mockRequest)
+}
