@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/kontena/kontena-client-go/api"
 	"github.com/kontena/kontena-client-go/client/test-data"
 )
 
@@ -35,4 +36,45 @@ func TestNodeGet(t *testing.T) {
 	} else {
 		assert.Equal(t, testNode, node, "response node")
 	}
+}
+
+func testNodeUpdate(t *testing.T, id NodeID, params api.NodePUT, mockRequest mockJSON) {
+	var test = makeTest()
+
+	test.mockPUT(t, "/v1/nodes/"+id.String(), func(request mockJSON) interface{} {
+		assert.Equal(t, mockRequest, request, "PUT /v1/nodes/"+id.String()+" JSON")
+
+		return api.Node{ID: id.String()}
+	})
+
+	if node, err := test.client.Nodes.Update(id, params); err != nil {
+		t.Fatalf("nodes update error: %v", err)
+	} else {
+		assert.Equal(t, node.ID, id.String())
+	}
+}
+
+func TestNodeUpdateDefaults(t *testing.T) {
+	var nodeParams = api.NodePUT{}
+	var mockRequest = parseJSON(`{}`)
+
+	testNodeUpdate(t, NodeID{"test-grid", "test-defaults"}, nodeParams, mockRequest)
+}
+
+func TestNodeUpdateLabelsClear(t *testing.T) {
+	var nodeParams = api.NodePUT{
+		Labels: &api.NodeLabels{},
+	}
+	var mockRequest = parseJSON(`{ "labels": [] }`)
+
+	testNodeUpdate(t, NodeID{"test-grid", "test-labels-clear"}, nodeParams, mockRequest)
+}
+
+func TestNodeUpdateLabels(t *testing.T) {
+	var nodeParams = api.NodePUT{
+		Labels: &api.NodeLabels{"test==true"},
+	}
+	var mockRequest = parseJSON(`{ "labels": [ "test==true" ] }`)
+
+	testNodeUpdate(t, NodeID{"test-grid", "test-labels"}, nodeParams, mockRequest)
 }
