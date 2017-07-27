@@ -14,7 +14,7 @@ type Config struct {
 	URL          string
 	ClientID     string // default OAUTH2_CLIENT_ID
 	ClientSecret string // default OAUTH2_CLIENT_SECRET
-	Token        *Token
+	Token        *Token // default does anonymous requests without any access token
 	Logger       Logger
 }
 
@@ -79,7 +79,10 @@ func (config Config) oauthClient() (*http.Client, error) {
 	if oauthConfig, err := config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
 	} else if config.Token == nil {
-		return nil, fmt.Errorf("Missing oauth2 token")
+		// without token
+		var httpClient = &http.Client{}
+
+		return httpClient, nil
 	} else {
 		var httpClient = oauthConfig.Client(context.TODO(), (*oauth2.Token)(config.Token))
 
