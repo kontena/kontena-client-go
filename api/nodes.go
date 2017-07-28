@@ -50,3 +50,26 @@ type NodePOST struct {
 type NodePUT struct {
 	Labels *NodeLabels `json:"labels,omitempty"`
 }
+
+type NodeToken struct {
+	ID    string `json:"id"`
+	Token string `json:"token"`
+}
+
+type NodeTokenParams struct {
+	ResetConnection bool `json:"reset_connection"`
+}
+
+type NodeTokenPUT struct {
+	Token string `json:"token,omitempty"`
+	NodeTokenParams
+}
+
+type NodeTokenPUTClear struct {
+	Token string `json:"token"` // must send empty string
+	NodeTokenParams
+}
+
+type NodeTokenDELETE struct {
+	NodeTokenParams
+}

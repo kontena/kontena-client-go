@@ -38,6 +38,22 @@ func TestNodeGet(t *testing.T) {
 	}
 }
 
+func TestNodeGetToken(t *testing.T) {
+	var test = makeTest()
+	var testToken = api.NodeToken{
+		ID:    "test/node",
+		Token: "ZxeA2iQ1MT61oT808BG/ty6aKtSnsD4f1cUub+DHWTfKoCBLTVYuP/WrRyDvjZAWdHZ3jBf/mhjGMiWhJ4YpSg==",
+	}
+
+	test.mockGET("/v1/nodes/test/node/token", "test-data/node-token.json")
+
+	if nodeToken, err := test.client.Nodes.GetToken(NodeID{"test", "node"}); err != nil {
+		t.Fatalf("node get error: %v", err)
+	} else {
+		assert.Equal(t, nodeToken, testToken, "response node token")
+	}
+}
+
 func testNodeCreate(t *testing.T, id NodeID, params api.NodePOST, mockRequest mockJSON) {
 	var test = makeTest()
 
@@ -119,4 +135,71 @@ func TestNodeUpdateLabels(t *testing.T) {
 	var mockRequest = parseJSON(`{ "labels": [ "test==true" ] }`)
 
 	testNodeUpdate(t, NodeID{"test-grid", "test-labels"}, nodeParams, mockRequest)
+}
+
+func mockNodeTokenPUT(t *testing.T, id NodeID, mockRequest mockJSON) *test {
+	var test = makeTest()
+
+	test.mockPUT(t, "/v1/nodes/"+id.String()+"/token", func(request mockJSON) interface{} {
+		assert.Equal(t, mockRequest, request, "PUT /v1/nodes/"+id.String()+"/token JSON")
+
+		return api.NodeToken{ID: id.String(), Token: "secret"}
+	})
+
+	return test
+}
+
+func TestNodeCreateTokenDefaults(t *testing.T) {
+	var nodeID = NodeID{"test-grid", "test-node"}
+	var params = api.NodeTokenParams{}
+	var mockRequest = parseJSON(`{"reset_connection": false}`)
+
+	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
+
+	if nodeToken, err := test.client.Nodes.CreateToken(nodeID, params); err != nil {
+		t.Fatalf("nodes update error: %v", err)
+	} else {
+		assert.Equal(t, nodeToken.ID, nodeID.String())
+	}
+}
+
+func TestNodeCreateToken(t *testing.T) {
+	var nodeID = NodeID{"test-grid", "test-node"}
+	var params = api.NodeTokenParams{ResetConnection: true}
+	var mockRequest = parseJSON(`{"reset_connection": true}`)
+
+	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
+
+	if nodeToken, err := test.client.Nodes.CreateToken(nodeID, params); err != nil {
+		t.Fatalf("nodes update error: %v", err)
+	} else {
+		assert.Equal(t, nodeToken.ID, nodeID.String())
+	}
+}
+
+func TestNodeUpdateToken(t *testing.T) {
+	var nodeID = NodeID{"test-grid", "test-node"}
+	var token = "secret 2"
+	var params = api.NodeTokenParams{ResetConnection: true}
+	var mockRequest = parseJSON(`{"reset_connection": true, "token": "secret 2"}`)
+
+	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
+
+	if nodeToken, err := test.client.Nodes.UpdateToken(nodeID, token, params); err != nil {
+		t.Fatalf("nodes update error: %v", err)
+	} else {
+		assert.Equal(t, nodeToken.ID, nodeID.String())
+	}
+}
+
+func TestNodeDeleteToken(t *testing.T) {
+	var nodeID = NodeID{"test-grid", "test-node"}
+	var params = api.NodeTokenParams{ResetConnection: true}
+	var mockRequest = parseJSON(`{"reset_connection": true, "token": ""}`)
+
+	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
+
+	if err := test.client.Nodes.DeleteToken(nodeID, params); err != nil {
+		t.Fatalf("nodes update error: %v", err)
+	}
 }
