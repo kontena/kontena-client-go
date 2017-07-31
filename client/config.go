@@ -2,6 +2,8 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -11,11 +13,25 @@ import (
 )
 
 type Config struct {
-	URL          string
-	ClientID     string // default OAUTH2_CLIENT_ID
-	ClientSecret string // default OAUTH2_CLIENT_SECRET
-	Token        *Token // default does anonymous requests without any access token
-	Logger       Logger
+	URL           string
+	SSLCertPEM    []byte
+	SSLServerName string
+	ClientID      string // default OAUTH2_CLIENT_ID
+	ClientSecret  string // default OAUTH2_CLIENT_SECRET
+	Token         *Token // default does anonymous requests without any access token
+	Logger        Logger
+}
+
+func (config Config) isSSL() bool {
+	if configURL, err := url.Parse(config.URL); err != nil {
+		return false
+	} else if configURL.Scheme == "https" {
+		return true
+	} else if configURL.Scheme == "http" {
+		return false
+	} else {
+		return false
+	}
 }
 
 func (config Config) makeURL(path ...string) (*url.URL, error) {
@@ -70,22 +86,63 @@ func (config Config) ExchangeToken(code string) (*Token, error) {
 	}
 }
 
+func (config Config) tlsConfig() (*tls.Config, error) {
+	var tlsConfig *tls.Config
+
+	if config.isSSL() {
+		tlsConfig = &tls.Config{
+			ServerName: config.SSLServerName,
+		}
+
+		if config.SSLCertPEM != nil {
+			var certPool = x509.NewCertPool()
+
+			if ok := certPool.AppendCertsFromPEM(config.SSLCertPEM); !ok {
+				return nil, fmt.Errorf("Invalid config.SSLCertPEM")
+			}
+
+			tlsConfig.RootCAs = certPool
+		}
+	}
+
+	return tlsConfig, nil
+}
+
 // Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
 //
 // This requires the config.Token to be set.
 //
 // XXX: if the token expires, then oauth2 refreshes it, and the caller needs to persist that...?
-func (config Config) oauthClient() (*http.Client, error) {
-	if oauthConfig, err := config.oauthConfig(); err != nil {
-		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
-	} else if config.Token == nil {
-		// without token
-		var httpClient = &http.Client{}
+func (config Config) httpClient() (*http.Client, error) {
 
-		return httpClient, nil
+	var httpTransport http.RoundTripper
+
+	if tlsConfig, err := config.tlsConfig(); err != nil {
+		return nil, err
 	} else {
-		var httpClient = oauthConfig.Client(context.TODO(), (*oauth2.Token)(config.Token))
-
-		return httpClient, nil
+		httpTransport = &http.Transport{
+			TLSClientConfig: tlsConfig,
+		}
 	}
+
+	if config.Token == nil {
+		// without token
+
+	} else if oauthConfig, err := config.oauthConfig(); err != nil {
+		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
+
+	} else {
+		var oauthToken = (*oauth2.Token)(config.Token)
+
+		httpTransport = &oauth2.Transport{
+			Source: oauth2.ReuseTokenSource(oauthToken, oauthConfig.TokenSource(context.TODO(), oauthToken)),
+			Base:   httpTransport,
+		}
+	}
+
+	var httpClient = &http.Client{
+		Transport: httpTransport,
+	}
+
+	return httpClient, nil
 }
