@@ -93,6 +93,9 @@ func (test *test) mockPOST(t *testing.T, path string, handler func(request mockJ
 func (test *test) mockPUT(t *testing.T, path string, handler func(request mockJSON) interface{}) {
 	test.mockRequestWithBody(t, "PUT", path, handler)
 }
+func (test *test) mockDELETE(t *testing.T, path string, handler func(request mockJSON) interface{}) {
+	test.mockRequestWithBody(t, "DELETE", path, handler)
+}
 
 func TestPing(t *testing.T) {
 	var test = makeTest()

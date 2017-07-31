@@ -65,11 +65,6 @@ type NodeTokenPUT struct {
 	NodeTokenParams
 }
 
-type NodeTokenPUTClear struct {
-	Token string `json:"token"` // must send empty string
-	NodeTokenParams
-}
-
 type NodeTokenDELETE struct {
 	NodeTokenParams
 }

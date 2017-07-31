@@ -98,10 +98,9 @@ func (nodesClient nodesClient) Delete(id NodeID) error {
 }
 
 func (nodesClient nodesClient) DeleteToken(id NodeID, params api.NodeTokenParams) error {
-	var requestBody = api.NodeTokenPUTClear{
-		Token:           "",
+	var requestBody = api.NodeTokenDELETE{
 		NodeTokenParams: params,
 	}
 
-	return nodesClient.client.put(request{RequestBody: requestBody}, "/v1/nodes", id.String(), "token")
+	return nodesClient.client.delete(request{RequestBody: requestBody}, "/v1/nodes", id.String(), "token")
 }

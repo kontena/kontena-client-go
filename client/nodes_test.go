@@ -148,6 +148,17 @@ func mockNodeTokenPUT(t *testing.T, id NodeID, mockRequest mockJSON) *test {
 
 	return test
 }
+func mockNodeTokenDELETE(t *testing.T, id NodeID, mockRequest mockJSON) *test {
+	var test = makeTest()
+
+	test.mockDELETE(t, "/v1/nodes/"+id.String()+"/token", func(request mockJSON) interface{} {
+		assert.Equal(t, mockRequest, request, "DELETE /v1/nodes/"+id.String()+"/token JSON")
+
+		return struct{}{}
+	})
+
+	return test
+}
 
 func TestNodeCreateTokenDefaults(t *testing.T) {
 	var nodeID = NodeID{"test-grid", "test-node"}
@@ -157,7 +168,7 @@ func TestNodeCreateTokenDefaults(t *testing.T) {
 	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
 
 	if nodeToken, err := test.client.Nodes.CreateToken(nodeID, params); err != nil {
-		t.Fatalf("nodes update error: %v", err)
+		t.Fatalf("nodes token update error: %v", err)
 	} else {
 		assert.Equal(t, nodeToken.ID, nodeID.String())
 	}
@@ -171,7 +182,7 @@ func TestNodeCreateToken(t *testing.T) {
 	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
 
 	if nodeToken, err := test.client.Nodes.CreateToken(nodeID, params); err != nil {
-		t.Fatalf("nodes update error: %v", err)
+		t.Fatalf("nodes token update error: %v", err)
 	} else {
 		assert.Equal(t, nodeToken.ID, nodeID.String())
 	}
@@ -186,7 +197,7 @@ func TestNodeUpdateToken(t *testing.T) {
 	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
 
 	if nodeToken, err := test.client.Nodes.UpdateToken(nodeID, token, params); err != nil {
-		t.Fatalf("nodes update error: %v", err)
+		t.Fatalf("nodes token update error: %v", err)
 	} else {
 		assert.Equal(t, nodeToken.ID, nodeID.String())
 	}
@@ -195,11 +206,11 @@ func TestNodeUpdateToken(t *testing.T) {
 func TestNodeDeleteToken(t *testing.T) {
 	var nodeID = NodeID{"test-grid", "test-node"}
 	var params = api.NodeTokenParams{ResetConnection: true}
-	var mockRequest = parseJSON(`{"reset_connection": true, "token": ""}`)
+	var mockRequest = parseJSON(`{"reset_connection": true}`)
 
-	var test = mockNodeTokenPUT(t, nodeID, mockRequest)
+	var test = mockNodeTokenDELETE(t, nodeID, mockRequest)
 
 	if err := test.client.Nodes.DeleteToken(nodeID, params); err != nil {
-		t.Fatalf("nodes update error: %v", err)
+		t.Fatalf("nodes token delete error: %v", err)
 	}
 }
