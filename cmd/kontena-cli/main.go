@@ -53,6 +53,16 @@ func app() *cli.App {
 			Destination: &kontenaCli.Config.URL,
 		},
 		cli.StringFlag{
+			Name:        "ssl-cert-cn",
+			EnvVar:      "KONTENA_CERT_CN",
+			Destination: &kontenaCli.Config.SSLServerName,
+		},
+		cli.StringFlag{
+			Name:        "ssl-cert-file",
+			EnvVar:      "KONTENA_CERT_FILE",
+			Destination: &kontenaCli.Options.SSLCertPath,
+		},
+		cli.StringFlag{
 			Name:        "token",
 			EnvVar:      "KONTENA_TOKEN",
 			Destination: &kontenaCli.Options.Token,

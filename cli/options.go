@@ -1,8 +1,9 @@
 package cli
 
 type Options struct {
-	Debug   bool
-	Verbose bool
-	Quiet   bool
-	Token   string
+	Debug       bool
+	Verbose     bool
+	Quiet       bool
+	Token       string
+	SSLCertPath string
 }
