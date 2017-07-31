@@ -23,7 +23,7 @@ func (config Config) MakeClient() (*Client, error) {
 		client.apiURL = apiURL
 	}
 
-	if httpClient, err := config.httpClient(); err != nil {
+	if httpClient, err := config.oauthClient(); err != nil {
 		return nil, err
 	} else {
 		client.httpClient = httpClient

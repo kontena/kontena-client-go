@@ -44,6 +44,61 @@ func (config Config) makeURL(path ...string) (*url.URL, error) {
 	}
 }
 
+func (config Config) tlsConfig() (*tls.Config, error) {
+	var tlsConfig *tls.Config
+
+	if config.isSSL() {
+		tlsConfig = &tls.Config{
+			ServerName: config.SSLServerName,
+		}
+
+		if config.SSLCertPEM != nil {
+			var certPool = x509.NewCertPool()
+
+			if ok := certPool.AppendCertsFromPEM(config.SSLCertPEM); !ok {
+				return nil, fmt.Errorf("Invalid config.SSLCertPEM")
+			}
+
+			tlsConfig.RootCAs = certPool
+		}
+	}
+
+	return tlsConfig, nil
+}
+
+// Create an http.Client for the server, using the tls configuration.
+//
+// This does not include the oauth2 access token.
+func (config Config) httpClient() (*http.Client, error) {
+	var httpTransport http.RoundTripper
+
+	if tlsConfig, err := config.tlsConfig(); err != nil {
+		return nil, err
+	} else {
+		httpTransport = &http.Transport{
+			TLSClientConfig: tlsConfig,
+		}
+	}
+
+	var httpClient = &http.Client{
+		Transport: httpTransport,
+	}
+
+	return httpClient, nil
+}
+
+func (config Config) oauthContext() (context.Context, error) {
+	var ctx = context.Background()
+
+	if httpClient, err := config.httpClient(); err != nil {
+		return nil, err
+	} else {
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+	}
+
+	return ctx, nil
+}
+
 func (config Config) oauthConfig() (*oauth2.Config, error) {
 	var oauthConfig = oauth2.Config{
 		ClientID:     config.ClientID,
@@ -77,72 +132,34 @@ func (config Config) oauthConfig() (*oauth2.Config, error) {
 //
 // This does not need to have any config.Token set.
 func (config Config) ExchangeToken(code string) (*Token, error) {
-	if oauthConfig, err := config.oauthConfig(); err != nil {
+	if oauthContext, err := config.oauthContext(); err != nil {
+		return nil, err
+	} else if oauthConfig, err := config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
-	} else if oauthToken, err := oauthConfig.Exchange(context.TODO(), code); err != nil {
+	} else if oauthToken, err := oauthConfig.Exchange(oauthContext, code); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 code: %v", err)
 	} else {
 		return (*Token)(oauthToken), nil
 	}
 }
 
-func (config Config) tlsConfig() (*tls.Config, error) {
-	var tlsConfig *tls.Config
-
-	if config.isSSL() {
-		tlsConfig = &tls.Config{
-			ServerName: config.SSLServerName,
-		}
-
-		if config.SSLCertPEM != nil {
-			var certPool = x509.NewCertPool()
-
-			if ok := certPool.AppendCertsFromPEM(config.SSLCertPEM); !ok {
-				return nil, fmt.Errorf("Invalid config.SSLCertPEM")
-			}
-
-			tlsConfig.RootCAs = certPool
-		}
-	}
-
-	return tlsConfig, nil
-}
-
 // Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
-//
-// This requires the config.Token to be set.
-//
+////
 // XXX: if the token expires, then oauth2 refreshes it, and the caller needs to persist that...?
-func (config Config) httpClient() (*http.Client, error) {
-
-	var httpTransport http.RoundTripper
-
-	if tlsConfig, err := config.tlsConfig(); err != nil {
-		return nil, err
-	} else {
-		httpTransport = &http.Transport{
-			TLSClientConfig: tlsConfig,
-		}
+func (config Config) oauthClient() (*http.Client, error) {
+	if config.Token == nil {
+		// no oauth2 token
+		return config.httpClient()
 	}
 
-	if config.Token == nil {
-		// without token
-
+	if oauthContext, err := config.oauthContext(); err != nil {
+		return nil, err
 	} else if oauthConfig, err := config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
-
 	} else {
 		var oauthToken = (*oauth2.Token)(config.Token)
+		var httpClient = oauthConfig.Client(oauthContext, oauthToken)
 
-		httpTransport = &oauth2.Transport{
-			Source: oauth2.ReuseTokenSource(oauthToken, oauthConfig.TokenSource(context.TODO(), oauthToken)),
-			Base:   httpTransport,
-		}
+		return httpClient, nil
 	}
-
-	var httpClient = &http.Client{
-		Transport: httpTransport,
-	}
-
-	return httpClient, nil
 }
