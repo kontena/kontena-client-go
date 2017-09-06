@@ -12,17 +12,17 @@ import (
 func nodeStatus(node api.Node) string {
 	if node.Connected {
 		return "online"
-	} else {
-		return "offline"
 	}
+
+	return "offline"
 }
 
 func nodeInitial(node api.Node) string {
 	if node.InitialMember {
 		return fmt.Sprintf("%d / %d", node.NodeNumber, node.Grid.InitialSize)
-	} else {
-		return "-"
 	}
+
+	return "-"
 }
 
 func nodeLabels(node api.Node) string {
@@ -43,25 +43,37 @@ func printNodes(nodes []api.Node) {
 	tbl.Print()
 }
 
+// NodesCommand represents the command type for a node within a grid.
 type NodesCommand struct {
 	*cli.CLI
 	Grid string
 }
 
+// List prints a list of all nodes within the grid.
 func (cmd NodesCommand) List() error {
-	if nodes, err := cmd.Client.Nodes.List(cmd.Grid); err != nil {
+	var (
+		nodes api.Nodes
+		err error
+	)
+
+	if nodes, err = cmd.Client.Nodes.List(cmd.Grid); err != nil {
 		return err
-	} else {
-		printNodes(nodes)
 	}
+
+	printNodes(nodes)
 
 	return nil
 }
 
+// Show prints details about the given node within the grid.
 func (cmd NodesCommand) Show(name string) error {
-	if node, err := cmd.Client.Nodes.Get(client.NodeID{cmd.Grid, name}); err != nil {
+	var (
+		node api.Node
+		err error
+	)
+	if node, err = cmd.Client.Nodes.Get(client.NodeID{cmd.Grid, name}); err != nil {
 		return err
-	} else {
-		return cli.Print(node)
 	}
+
+	return cli.Print(node)
 }

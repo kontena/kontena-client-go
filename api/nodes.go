@@ -6,6 +6,8 @@ import (
 
 type NodeLabels []string
 
+// Node represents a Kontena node, (a virtual or physical machine) which will
+// run the Kontena Agent where services can be deployed.
 type Node struct {
 	ID            string // grid/name
 	NodeID        string `json:"node_id"` // Docker ID
@@ -36,6 +38,8 @@ type Node struct {
 	Grid          Grid
 	// resource_usage
 }
+
+type Nodes []Node
 
 type NodesGET struct {
 	Nodes []Node

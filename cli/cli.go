@@ -20,6 +20,8 @@ func (cli *CLI) Setup() {
 }
 
 func (cli *CLI) Connect() error {
+	var err error
+
 	if cli.Options.SSLCertPath == "" {
 
 	} else if certPEM, err := ioutil.ReadFile(cli.Options.SSLCertPath); err != nil {
@@ -28,11 +30,9 @@ func (cli *CLI) Connect() error {
 		cli.Config.SSLCertPEM = certPEM
 	}
 
-	if client, err := cli.Config.Connect(); err != nil {
+	if cli.Client, err = cli.Config.Connect(); err != nil {
 		return err
-	} else {
-		cli.Client = client
 	}
 
-	return nil
+	return err
 }

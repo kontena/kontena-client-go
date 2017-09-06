@@ -29,19 +29,27 @@ func (config Config) isSSL() bool {
 		return true
 	} else if configURL.Scheme == "http" {
 		return false
-	} else {
-		return false
 	}
+
+	return false
 }
 
 func (config Config) makeURL(path ...string) (*url.URL, error) {
-	if baseURL, err := url.Parse(config.URL); err != nil {
+	var (
+		pathURL *url.URL
+		baseURL *url.URL
+		err error
+	)
+
+	if baseURL, err = url.Parse(config.URL); err != nil {
 		return nil, err
-	} else if pathURL, err := baseURL.Parse(strings.Join(path, "/")); err != nil {
-		return nil, err
-	} else {
-		return pathURL, nil
 	}
+
+	if pathURL, err = baseURL.Parse(strings.Join(path, "/")); err != nil {
+		return nil, err
+	}
+
+	return pathURL, err
 }
 
 func (config Config) tlsConfig() (*tls.Config, error) {
@@ -70,17 +78,20 @@ func (config Config) tlsConfig() (*tls.Config, error) {
 //
 // This does not include the oauth2 access token.
 func (config Config) httpClient() (*http.Client, error) {
-	var httpTransport http.RoundTripper
+	var (
+		tlsConfig *tls.Config
+		err error
+	)
 
-	if tlsConfig, err := config.tlsConfig(); err != nil {
+	if tlsConfig, err = config.tlsConfig(); err != nil {
 		return nil, err
-	} else {
-		httpTransport = &http.Transport{
-			TLSClientConfig: tlsConfig,
-		}
 	}
 
-	var httpClient = &http.Client{
+	httpTransport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+	}
+
+	httpClient := &http.Client{
 		Transport: httpTransport,
 	}
 
@@ -88,19 +99,21 @@ func (config Config) httpClient() (*http.Client, error) {
 }
 
 func (config Config) oauthContext() (context.Context, error) {
-	var ctx = context.Background()
+	var (
+		httpClient *http.Client
+		err error
+	)
 
-	if httpClient, err := config.httpClient(); err != nil {
+	if httpClient, err = config.httpClient(); err != nil {
 		return nil, err
-	} else {
-		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
 	}
 
-	return ctx, nil
+	return context.WithValue(context.Background(),
+		oauth2.HTTPClient, httpClient), err
 }
 
 func (config Config) oauthConfig() (*oauth2.Config, error) {
-	var oauthConfig = oauth2.Config{
+	oauthConfig := oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
 	}
@@ -113,53 +126,76 @@ func (config Config) oauthConfig() (*oauth2.Config, error) {
 		oauthConfig.ClientSecret = OAUTH2_CLIENT_SECRET
 	}
 
+	var (
+		authURL *url.URL
+		tokenURL *url.URL
+		err error
+	)
+
 	// apply oauth2 API URLs
-	if authURL, err := config.makeURL("/oauth2/authorize"); err != nil {
+	if authURL, err = config.makeURL("/oauth2/authorize"); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 authorize URL: %v", err)
-	} else {
-		oauthConfig.Endpoint.AuthURL = authURL.String()
 	}
-	if tokenURL, err := config.makeURL("/oauth2/token"); err != nil {
+
+	oauthConfig.Endpoint.AuthURL = authURL.String()
+
+	if tokenURL, err = config.makeURL("/oauth2/token"); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 token URL: %v", err)
-	} else {
-		oauthConfig.Endpoint.TokenURL = tokenURL.String()
 	}
+
+	oauthConfig.Endpoint.TokenURL = tokenURL.String()
 
 	return &oauthConfig, nil
 }
 
-// Exchange a single-use oauth2 code for an access token.
+// ExchangeToken allows you to exchange a single-use oauth2 code for an access
+// token.
 //
 // This does not need to have any config.Token set.
 func (config Config) ExchangeToken(code string) (*Token, error) {
-	if oauthContext, err := config.oauthContext(); err != nil {
+	var (
+		oauthToken *oauth2.Token
+		oauthConfig *oauth2.Config
+		oauthContext context.Context
+		err error
+	)
+
+	if oauthContext, err = config.oauthContext(); err != nil {
 		return nil, err
-	} else if oauthConfig, err := config.oauthConfig(); err != nil {
+	} else if oauthConfig, err = config.oauthConfig(); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
-	} else if oauthToken, err := oauthConfig.Exchange(oauthContext, code); err != nil {
+	} else if oauthToken, err = oauthConfig.Exchange(oauthContext, code); err != nil {
 		return nil, fmt.Errorf("Invalid oauth2 code: %v", err)
-	} else {
-		return (*Token)(oauthToken), nil
 	}
+
+	return (*Token)(oauthToken), nil
 }
 
-// Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
-////
-// XXX: if the token expires, then oauth2 refreshes it, and the caller needs to persist that...?
+// Create an http.Client using the OAuth2 configuration, using the oauth2 access
+// token in requests.
+//
+// XXX: if the token expires, then oauth2 refreshes it, and the caller needs to
+// persist that...?
 func (config Config) oauthClient() (*http.Client, error) {
 	if config.Token == nil {
 		// no oauth2 token
 		return config.httpClient()
 	}
 
-	if oauthContext, err := config.oauthContext(); err != nil {
-		return nil, err
-	} else if oauthConfig, err := config.oauthConfig(); err != nil {
-		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
-	} else {
-		var oauthToken = (*oauth2.Token)(config.Token)
-		var httpClient = oauthConfig.Client(oauthContext, oauthToken)
+	var (
+		oauthConfig *oauth2.Config
+		oauthContext context.Context
+		err error
+	)
 
-		return httpClient, nil
+	if oauthContext, err = config.oauthContext(); err != nil {
+		return nil, err
+	} else if oauthConfig, err = config.oauthConfig(); err != nil {
+		return nil, fmt.Errorf("Invalid oauth2 config: %v", err)
 	}
+
+	var oauthToken = (*oauth2.Token)(config.Token)
+	var httpClient = oauthConfig.Client(oauthContext, oauthToken)
+
+	return httpClient, nil
 }

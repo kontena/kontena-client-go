@@ -37,12 +37,14 @@ type Grid struct {
 	UserCount      int `json:"user_count"`
 }
 
+type Grids []Grid
+
 func (grid Grid) String() string {
 	return grid.ID
 }
 
 type GridsGET struct {
-	Grids []Grid
+	Grids Grids
 }
 
 type GridPOST struct {

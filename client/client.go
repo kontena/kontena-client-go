@@ -10,23 +10,21 @@ import (
 	"strings"
 )
 
-// Calls ConnectOAuth2() to update the config.LoginToken.
+// MakeClient calls ConnectOAuth2() to update the config.LoginToken.
 func (config Config) MakeClient() (*Client, error) {
-	var client = Client{
+	client := Client{
 		logger: config.Logger,
 		config: config,
 	}
 
-	if apiURL, err := config.makeURL(); err != nil {
+	var err error
+
+	if client.apiURL, err = config.makeURL(); err != nil {
 		return nil, fmt.Errorf("Invalid API URL %v: %v", config.URL, err)
-	} else {
-		client.apiURL = apiURL
 	}
 
-	if httpClient, err := config.oauthClient(); err != nil {
+	if client.httpClient, err = config.oauthClient(); err != nil {
 		return nil, err
-	} else {
-		client.httpClient = httpClient
 	}
 
 	if err := client.init(); err != nil {
@@ -36,6 +34,7 @@ func (config Config) MakeClient() (*Client, error) {
 	return &client, nil
 }
 
+// Connect uses config information to allow the client to make a connection.
 func (config Config) Connect() (*Client, error) {
 	if client, err := config.MakeClient(); err != nil {
 		return nil, err
@@ -46,6 +45,8 @@ func (config Config) Connect() (*Client, error) {
 	}
 }
 
+// Client contains exported fields that give access to parts of the API to then
+// make calls on.
 type Client struct {
 	logger     Logger
 	config     Config
@@ -69,6 +70,8 @@ func (client *Client) String() string {
 	return fmt.Sprintf("%v", client.config.URL)
 }
 
+// Config returns the current configurations that have been setup with the
+// client (config.go).
 func (client *Client) Config() Config {
 	return client.config
 }
@@ -88,6 +91,7 @@ type request struct {
 	ResponseBody interface{} // JSON
 }
 
+// String returns the request method and URL as a string.
 func (request request) String() string {
 	return fmt.Sprintf("HTTP %v %v", request.Method, request.URL)
 }

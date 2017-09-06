@@ -5,6 +5,7 @@ type UserRole struct {
 	Description string
 }
 
+// User represents an authenticated Kontena user with basic details.
 type User struct {
 	ID    string
 	Email string
