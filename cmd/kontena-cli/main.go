@@ -14,16 +14,11 @@ var log = kontena_cli.Logger()
 func beforeApp(c *cli.Context) error {
 	kontenaCli.Setup()
 
-	var (
-		clientToken *client.Token
-		err         error
-	)
-
-	if clientToken, err = client.MakeToken(kontenaCli.Options.Token); err != nil {
+	if clientToken, err := client.MakeToken(kontenaCli.Options.Token); err != nil {
 		return err
+	} else {
+		kontenaCli.Config.Token = clientToken
 	}
-
-	kontenaCli.Config.Token = clientToken
 
 	log.Debugf("Config: %#v", kontenaCli.Config)
 

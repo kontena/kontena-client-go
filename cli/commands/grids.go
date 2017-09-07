@@ -25,30 +25,20 @@ type GridsCommand struct {
 
 // List prints a table of all grids.
 func (cmd GridsCommand) List() error {
-	var (
-		grids []api.Grid
-		err error
-	)
-
-	if grids, err = cmd.Client.Grids.List(); err != nil {
+	if grids, err := cmd.Client.Grids.List(); err != nil {
 		return err
+	} else {
+		printGrids(grids)
 	}
-
-	printGrids(grids)
 
 	return nil
 }
 
 // Show prints details of a given grid.
 func (cmd GridsCommand) Show(name string) error {
-	var (
-		grid api.Grid
-		err error
-	)
-
-	if grid, err = cmd.Client.Grids.Get(name); err != nil {
+	if grid, err := cmd.Client.Grids.Get(name); err != nil {
 		return err
+	} else {
+		return cli.Print(grid)
 	}
-
-	return cli.Print(grid)
 }

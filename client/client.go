@@ -12,19 +12,21 @@ import (
 
 // MakeClient calls ConnectOAuth2() to update the config.LoginToken.
 func (config Config) MakeClient() (*Client, error) {
-	client := Client{
+	var client = Client{
 		logger: config.Logger,
 		config: config,
 	}
 
-	var err error
-
-	if client.apiURL, err = config.makeURL(); err != nil {
+	if apiURL, err := config.makeURL(); err != nil {
 		return nil, fmt.Errorf("Invalid API URL %v: %v", config.URL, err)
+	} else {
+		client.apiURL = apiURL
 	}
 
-	if client.httpClient, err = config.oauthClient(); err != nil {
+	if httpClient, err := config.oauthClient(); err != nil {
 		return nil, err
+	} else {
+		client.httpClient = httpClient
 	}
 
 	if err := client.init(); err != nil {

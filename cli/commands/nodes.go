@@ -51,29 +51,20 @@ type NodesCommand struct {
 
 // List prints a list of all nodes within the grid.
 func (cmd NodesCommand) List() error {
-	var (
-		nodes api.Nodes
-		err error
-	)
-
-	if nodes, err = cmd.Client.Nodes.List(cmd.Grid); err != nil {
+	if nodes, err := cmd.Client.Nodes.List(cmd.Grid); err != nil {
 		return err
+	} else {
+		printNodes(nodes)
 	}
-
-	printNodes(nodes)
 
 	return nil
 }
 
 // Show prints details about the given node within the grid.
 func (cmd NodesCommand) Show(name string) error {
-	var (
-		node api.Node
-		err error
-	)
-	if node, err = cmd.Client.Nodes.Get(client.NodeID{cmd.Grid, name}); err != nil {
+	if node, err := cmd.Client.Nodes.Get(client.NodeID{cmd.Grid, name}); err != nil {
 		return err
+	} else {
+		return cli.Print(node)
 	}
-
-	return cli.Print(node)
 }
