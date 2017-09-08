@@ -10,19 +10,19 @@ import (
 )
 
 func nodeStatus(node api.Node) string {
-	if node.Connected {
-		return "online"
+	if !node.Connected {
+		return "offline"
 	}
 
-	return "offline"
+	return "online"
 }
 
 func nodeInitial(node api.Node) string {
-	if node.InitialMember {
-		return fmt.Sprintf("%d / %d", node.NodeNumber, node.Grid.InitialSize)
+	if !node.InitialMember {
+		return "-"
 	}
 
-	return "-"
+	return fmt.Sprintf("%d / %d", node.NodeNumber, node.Grid.InitialSize)
 }
 
 func nodeLabels(node api.Node) string {

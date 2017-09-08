@@ -25,13 +25,9 @@ type Config struct {
 func (config Config) isSSL() bool {
 	if configURL, err := url.Parse(config.URL); err != nil {
 		return false
-	} else if configURL.Scheme == "https" {
-		return true
-	} else if configURL.Scheme == "http" {
-		return false
+	} else {
+		return configURL.Scheme == "https"
 	}
-
-	return false
 }
 
 func (config Config) makeURL(path ...string) (*url.URL, error) {
