@@ -16,8 +16,8 @@ type Config struct {
 	URL           string
 	SSLCertPEM    []byte
 	SSLServerName string
-	ClientID      string // default Oauth2ClientID
-	ClientSecret  string // default Oauth2ClientSecret
+	ClientID      string // default OAuth2ClientID
+	ClientSecret  string // default OAuth2ClientSecret
 	Token         *Token // default does anonymous requests without any access token
 	Logger        Logger
 }
@@ -107,10 +107,10 @@ func (config Config) oauthConfig() (*oauth2.Config, error) {
 
 	// apply defaults
 	if oauthConfig.ClientID == "" {
-		oauthConfig.ClientID = Oauth2ClientID
+		oauthConfig.ClientID = OAuth2ClientID
 	}
 	if oauthConfig.ClientSecret == "" {
-		oauthConfig.ClientSecret = Oauth2ClientSecret
+		oauthConfig.ClientSecret = OAuth2ClientSecret
 	}
 
 	// apply oauth2 API URLs

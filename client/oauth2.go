@@ -8,8 +8,8 @@ import (
 
 const (
 	// generate using many fair dice rolls
-	Oauth2ClientID     = "d0f032e5af41187fdaf45b4aeee76ee4"
-	Oauth2ClientSecret = "4141f52bb9f80dfc776b5b773ccf550d"
+	OAuth2ClientID     = "d0f032e5af41187fdaf45b4aeee76ee4"
+	OAuth2ClientSecret = "4141f52bb9f80dfc776b5b773ccf550d"
 )
 
 type Token oauth2.Token

@@ -42,7 +42,7 @@ type Node struct {
 type Nodes []Node
 
 type NodesGET struct {
-	Nodes []Node
+	Nodes Nodes
 }
 
 type NodePOST struct {
