@@ -4,7 +4,15 @@
 
 Golang Kontena API client library.
 
-***DISCLAIMER***: This client library is a work in progress, and is intended for use with the Kontena 1.4 development version. 
+***DISCLAIMER***: This client library is a work in progress, and is intended for use with the Kontena 1.4 development version.
+
+## Build
+
+Requires Go 1.7.
+
+```
+  $ go get github.com/kontena/kontena-client-go/...
+```
 
 ## Usage / Examples
 
