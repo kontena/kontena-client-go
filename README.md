@@ -11,7 +11,7 @@ Golang Kontena API client library.
 Requires Go 1.7.
 
 ```
-  $ go get github.com/kontena/kontena-client-go
+  $ go get github.com/kontena/kontena-client-go/...
 ```
 
 ## Usage / Examples
