@@ -41,8 +41,10 @@ func (grid Grid) String() string {
 	return grid.ID
 }
 
+type Grids []Grid
+
 type GridsGET struct {
-	Grids []Grid
+	Grids Grids
 }
 
 type GridPOST struct {

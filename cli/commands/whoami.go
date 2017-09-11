@@ -13,6 +13,8 @@ type WhoamiCommand struct {
 	*cli.CLI
 }
 
+// Whoami prints both the URL and username based upon who is currently
+// authenticated.
 func (cmd WhoamiCommand) Whoami() error {
 	var whoami = whoami{
 		URL: cmd.Client.String(),

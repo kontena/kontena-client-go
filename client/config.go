@@ -16,8 +16,8 @@ type Config struct {
 	URL           string
 	SSLCertPEM    []byte
 	SSLServerName string
-	ClientID      string // default OAUTH2_CLIENT_ID
-	ClientSecret  string // default OAUTH2_CLIENT_SECRET
+	ClientID      string // default OAuth2ClientID
+	ClientSecret  string // default OAuth2ClientSecret
 	Token         *Token // default does anonymous requests without any access token
 	Logger        Logger
 }
@@ -25,12 +25,8 @@ type Config struct {
 func (config Config) isSSL() bool {
 	if configURL, err := url.Parse(config.URL); err != nil {
 		return false
-	} else if configURL.Scheme == "https" {
-		return true
-	} else if configURL.Scheme == "http" {
-		return false
 	} else {
-		return false
+		return configURL.Scheme == "https"
 	}
 }
 
@@ -107,10 +103,10 @@ func (config Config) oauthConfig() (*oauth2.Config, error) {
 
 	// apply defaults
 	if oauthConfig.ClientID == "" {
-		oauthConfig.ClientID = OAUTH2_CLIENT_ID
+		oauthConfig.ClientID = OAuth2ClientID
 	}
 	if oauthConfig.ClientSecret == "" {
-		oauthConfig.ClientSecret = OAUTH2_CLIENT_SECRET
+		oauthConfig.ClientSecret = OAuth2ClientSecret
 	}
 
 	// apply oauth2 API URLs
@@ -128,7 +124,8 @@ func (config Config) oauthConfig() (*oauth2.Config, error) {
 	return &oauthConfig, nil
 }
 
-// Exchange a single-use oauth2 code for an access token.
+// ExchangeToken allows you to exchange a single-use oauth2 code for an access
+// token.
 //
 // This does not need to have any config.Token set.
 func (config Config) ExchangeToken(code string) (*Token, error) {
@@ -143,9 +140,11 @@ func (config Config) ExchangeToken(code string) (*Token, error) {
 	}
 }
 
-// Create an http.Client using the OAuth2 configuration, using the oauth2 access token in requests.
-////
-// XXX: if the token expires, then oauth2 refreshes it, and the caller needs to persist that...?
+// Create an http.Client using the OAuth2 configuration, using the oauth2 access
+// token in requests.
+//
+// XXX: if the token expires, then oauth2 refreshes it, and the caller needs to
+// persist that...?
 func (config Config) oauthClient() (*http.Client, error) {
 	if config.Token == nil {
 		// no oauth2 token

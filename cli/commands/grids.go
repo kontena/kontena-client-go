@@ -23,6 +23,7 @@ type GridsCommand struct {
 	*cli.CLI
 }
 
+// List prints a table of all grids.
 func (cmd GridsCommand) List() error {
 	if grids, err := cmd.Client.Grids.List(); err != nil {
 		return err
@@ -33,6 +34,7 @@ func (cmd GridsCommand) List() error {
 	return nil
 }
 
+// Show prints details of a given grid.
 func (cmd GridsCommand) Show(name string) error {
 	if grid, err := cmd.Client.Grids.Get(name); err != nil {
 		return err

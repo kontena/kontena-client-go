@@ -10,19 +10,19 @@ import (
 )
 
 func nodeStatus(node api.Node) string {
-	if node.Connected {
-		return "online"
-	} else {
+	if !node.Connected {
 		return "offline"
 	}
+
+	return "online"
 }
 
 func nodeInitial(node api.Node) string {
-	if node.InitialMember {
-		return fmt.Sprintf("%d / %d", node.NodeNumber, node.Grid.InitialSize)
-	} else {
+	if !node.InitialMember {
 		return "-"
 	}
+
+	return fmt.Sprintf("%d / %d", node.NodeNumber, node.Grid.InitialSize)
 }
 
 func nodeLabels(node api.Node) string {
@@ -43,11 +43,13 @@ func printNodes(nodes []api.Node) {
 	tbl.Print()
 }
 
+// NodesCommand represents the command type for a node within a grid.
 type NodesCommand struct {
 	*cli.CLI
 	Grid string
 }
 
+// List prints a list of all nodes within the grid.
 func (cmd NodesCommand) List() error {
 	if nodes, err := cmd.Client.Nodes.List(cmd.Grid); err != nil {
 		return err
@@ -58,6 +60,7 @@ func (cmd NodesCommand) List() error {
 	return nil
 }
 
+// Show prints details about the given node within the grid.
 func (cmd NodesCommand) Show(name string) error {
 	if node, err := cmd.Client.Nodes.Get(client.NodeID{cmd.Grid, name}); err != nil {
 		return err

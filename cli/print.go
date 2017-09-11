@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Print marshals the given object into YAML and then prints it to stdout.
 func Print(object interface{}) error {
 	if out, err := yaml.Marshal(object); err != nil {
 		return err

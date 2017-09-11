@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// Calls ConnectOAuth2() to update the config.LoginToken.
+// MakeClient calls ConnectOAuth2() to update the config.LoginToken.
 func (config Config) MakeClient() (*Client, error) {
 	var client = Client{
 		logger: config.Logger,
@@ -36,6 +36,7 @@ func (config Config) MakeClient() (*Client, error) {
 	return &client, nil
 }
 
+// Connect uses config information to allow the client to make a connection.
 func (config Config) Connect() (*Client, error) {
 	if client, err := config.MakeClient(); err != nil {
 		return nil, err
@@ -46,6 +47,8 @@ func (config Config) Connect() (*Client, error) {
 	}
 }
 
+// Client contains exported fields that give access to parts of the API to then
+// make calls on.
 type Client struct {
 	logger     Logger
 	config     Config
@@ -69,6 +72,8 @@ func (client *Client) String() string {
 	return fmt.Sprintf("%v", client.config.URL)
 }
 
+// Config returns the current configurations that have been setup with the
+// client (config.go).
 func (client *Client) Config() Config {
 	return client.config
 }
@@ -88,6 +93,7 @@ type request struct {
 	ResponseBody interface{} // JSON
 }
 
+// String returns the request method and URL as a string.
 func (request request) String() string {
 	return fmt.Sprintf("HTTP %v %v", request.Method, request.URL)
 }
