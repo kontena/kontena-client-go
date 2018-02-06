@@ -75,7 +75,7 @@ func (test *test) mockRequestWithBody(t *testing.T, method string, path string, 
 	})
 }
 
-func (test *test) mockGET(path string, filename string) {
+func (test *test) mockGETFile(path string, filename string) {
 	fileData, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -84,6 +84,13 @@ func (test *test) mockGET(path string, filename string) {
 	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write(fileData)
+	})
+}
+
+func (test *test) mockGET(path string, data string) {
+	test.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		w.Write([]byte(data))
 	})
 }
 

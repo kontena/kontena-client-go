@@ -10,7 +10,7 @@ import (
 func TestGridsList(t *testing.T) {
 	var test = makeTest()
 
-	test.mockGET("/v1/grids", "test-data/grids.json")
+	test.mockGETFile("/v1/grids", "test-data/grids.json")
 
 	if grids, err := test.client.Grids.List(); err != nil {
 		t.Fatalf("grids list error: %v", err)

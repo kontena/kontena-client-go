@@ -29,7 +29,7 @@ func TestNodeGet(t *testing.T) {
 	var test = makeTest()
 	var testNode = test_data.Node
 
-	test.mockGET("/v1/nodes/test/node1", "test-data/node.json")
+	test.mockGETFile("/v1/nodes/test/node1", "test-data/node.json")
 
 	if node, err := test.client.Nodes.Get(NodeID{"test", "node1"}); err != nil {
 		t.Fatalf("node get error: %v", err)
@@ -45,7 +45,7 @@ func TestNodeGetToken(t *testing.T) {
 		Token: "ZxeA2iQ1MT61oT808BG/ty6aKtSnsD4f1cUub+DHWTfKoCBLTVYuP/WrRyDvjZAWdHZ3jBf/mhjGMiWhJ4YpSg==",
 	}
 
-	test.mockGET("/v1/nodes/test/node/token", "test-data/node-token.json")
+	test.mockGETFile("/v1/nodes/test/node/token", "test-data/node-token.json")
 
 	if nodeToken, err := test.client.Nodes.GetToken(NodeID{"test", "node"}); err != nil {
 		t.Fatalf("node get error: %v", err)
