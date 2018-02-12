@@ -68,6 +68,6 @@ func TestExternalRegistryCreate(t *testing.T) {
 	if externalRegistry, err := test.client.ExternalRegistries.Create("test", params); err != nil {
 		t.Fatalf("external-registries create error: %v", err)
 	} else {
-		assert.Equal(t, externalRegistry.ID, "test/images.kontena.io")
+		assert.Equal(t, externalRegistry.ID.String(), "test/images.kontena.io")
 	}
 }
