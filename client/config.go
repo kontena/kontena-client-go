@@ -31,7 +31,9 @@ func (config Config) isSSL() bool {
 }
 
 func (config Config) makeURL(path ...string) (*url.URL, error) {
-	if baseURL, err := url.Parse(config.URL); err != nil {
+	if config.URL == "" {
+		return nil, fmt.Errorf("Missing config.URL")
+	} else if baseURL, err := url.Parse(config.URL); err != nil {
 		return nil, err
 	} else if pathURL, err := baseURL.Parse(strings.Join(path, "/")); err != nil {
 		return nil, err

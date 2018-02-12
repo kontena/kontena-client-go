@@ -18,7 +18,7 @@ func (config Config) MakeClient() (*Client, error) {
 	}
 
 	if apiURL, err := config.makeURL(); err != nil {
-		return nil, fmt.Errorf("Invalid API URL %v: %v", config.URL, err)
+		return nil, fmt.Errorf("Invalid API URL=%#v: %v", config.URL, err)
 	} else {
 		client.apiURL = apiURL
 	}
