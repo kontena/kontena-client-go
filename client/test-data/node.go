@@ -7,7 +7,7 @@ import (
 )
 
 var Node = api.Node{
-	ID:            "test/terraform-test-node1",
+	ID:            api.NodeID{"test", "terraform-test-node1"},
 	NodeID:        "VAHL:WEKY:EVK7:7WUJ:2SQY:B5T7:36TT:NTUL:7CHW:XJA5:KBHL:RSTU",
 	Connected:     true,
 	CreatedAt:     (time.Date(2017, 6, 15, 21, 12, 26, 845000000, time.UTC)),

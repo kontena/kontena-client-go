@@ -1,15 +1,53 @@
 package api
 
 import (
+	"fmt"
+	"regexp"
+	"strings"
 	"time"
 )
+
+var NodeIDRegexp = regexp.MustCompile(`^([a-z0-9_-]+)/([a-z0-9_-]+)$`)
+
+type NodeID struct {
+	Grid string
+	Name string
+}
+
+func ParseNodeID(str string) (id NodeID, err error) {
+	if matches := NodeIDRegexp.FindStringSubmatch(str); matches == nil {
+		return id, fmt.Errorf("Invalid NodeID: %#v", str)
+	} else {
+		id.Grid = matches[1]
+		id.Name = matches[2]
+	}
+
+	return id, nil
+}
+
+func (id *NodeID) UnmarshalJSON(buf []byte) error {
+	parts := strings.Split(string(buf), "/")
+
+	if len(parts) != 2 {
+		return fmt.Errorf("Invalid NodeID: %#v", string(buf))
+	}
+
+	id.Grid = parts[0]
+	id.Name = parts[1]
+
+	return nil
+}
+
+func (nodeID NodeID) String() string {
+	return fmt.Sprintf("%s/%s", nodeID.Grid, nodeID.Name)
+}
 
 type NodeLabels []string
 
 // Node represents a Kontena node, (a virtual or physical machine) which will
 // run the Kontena Agent where services can be deployed.
 type Node struct {
-	ID            string // grid/name
+	ID            NodeID // grid/name
 	NodeID        string `json:"node_id"` // Docker ID
 	Connected     bool
 	CreatedAt     time.Time `json:"created_at"`
@@ -56,7 +94,7 @@ type NodePUT struct {
 }
 
 type NodeToken struct {
-	ID    string `json:"id"`
+	ID    NodeID `json:"id"`
 	Token string `json:"token"`
 }
 
