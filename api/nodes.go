@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -26,10 +27,16 @@ func ParseNodeID(str string) (id NodeID, err error) {
 }
 
 func (id *NodeID) UnmarshalJSON(buf []byte) error {
-	parts := strings.Split(string(buf), "/")
+	var str string
+
+	if err := json.Unmarshal(buf, &str); err != nil {
+		return err
+	}
+
+	parts := strings.Split(str, "/")
 
 	if len(parts) != 2 {
-		return fmt.Errorf("Invalid NodeID: %#v", string(buf))
+		return fmt.Errorf("Invalid NodeID: %#v", str)
 	}
 
 	id.Grid = parts[0]
@@ -40,6 +47,10 @@ func (id *NodeID) UnmarshalJSON(buf []byte) error {
 
 func (nodeID NodeID) String() string {
 	return fmt.Sprintf("%s/%s", nodeID.Grid, nodeID.Name)
+}
+
+func (nodeID NodeID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(nodeID.String())
 }
 
 type NodeLabels []string
