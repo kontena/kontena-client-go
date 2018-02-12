@@ -22,7 +22,7 @@ func (client externalRegistriesClient) List(grid string) ([]api.ExternalRegistry
 func (client externalRegistriesClient) Get(id api.ExternalRegistryID) (api.ExternalRegistry, error) {
 	var externalRegistry api.ExternalRegistry
 
-	return externalRegistry, client.get(request{ResponseBody: &externalRegistry}, "/v1/external_registries", id.Grid, id.Name)
+	return externalRegistry, client.get(request{ResponseBody: &externalRegistry}, "/v1/external_registries", id.String())
 }
 
 func (client externalRegistriesClient) Create(grid string, params api.ExternalRegistryPOST) (api.ExternalRegistry, error) {
@@ -32,5 +32,5 @@ func (client externalRegistriesClient) Create(grid string, params api.ExternalRe
 }
 
 func (client externalRegistriesClient) Delete(id api.ExternalRegistryID) error {
-	return client.delete(request{}, "/v1/external_registries", id.Grid, id.Name)
+	return client.delete(request{}, "/v1/external_registries", id.String())
 }
