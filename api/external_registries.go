@@ -5,7 +5,7 @@ type ExternalRegistryIndex struct {
 }
 
 type ExternalRegistry struct {
-	ID       string
+	ID       ExternalRegistryID
 	Name     string
 	URL      string
 	Username string
