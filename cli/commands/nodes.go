@@ -6,7 +6,6 @@ import (
 
 	"github.com/kontena/kontena-client-go/api"
 	"github.com/kontena/kontena-client-go/cli"
-	"github.com/kontena/kontena-client-go/client"
 )
 
 func nodeStatus(node api.Node) string {
@@ -62,7 +61,7 @@ func (cmd NodesCommand) List() error {
 
 // Show prints details about the given node within the grid.
 func (cmd NodesCommand) Show(name string) error {
-	if node, err := cmd.Client.Nodes.Get(client.NodeID{cmd.Grid, name}); err != nil {
+	if node, err := cmd.Client.Nodes.Get(api.NodeID{cmd.Grid, name}); err != nil {
 		return err
 	} else {
 		return cli.Print(node)

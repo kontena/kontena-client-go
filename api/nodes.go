@@ -9,7 +9,7 @@ type NodeLabels []string
 // Node represents a Kontena node, (a virtual or physical machine) which will
 // run the Kontena Agent where services can be deployed.
 type Node struct {
-	ID            string // grid/name
+	ID            NodeID // grid/name
 	NodeID        string `json:"node_id"` // Docker ID
 	Connected     bool
 	CreatedAt     time.Time `json:"created_at"`
@@ -56,7 +56,7 @@ type NodePUT struct {
 }
 
 type NodeToken struct {
-	ID    string `json:"id"`
+	ID    NodeID `json:"id"`
 	Token string `json:"token"`
 }
 

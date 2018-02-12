@@ -10,11 +10,11 @@ import (
 )
 
 func TestNodeIDString(t *testing.T) {
-	assert.Equal(t, "grid/name", NodeID{Grid: "grid", Name: "name"}.String(), "node ID string")
+	assert.Equal(t, "grid/name", api.NodeID{Grid: "grid", Name: "name"}.String(), "node ID string")
 }
 
-func testNodeIDParse(t *testing.T, expected NodeID, id string) {
-	if nodeID, err := ParseNodeID(id); err != nil {
+func testNodeIDParse(t *testing.T, expected api.NodeID, id string) {
+	if nodeID, err := api.ParseNodeID(id); err != nil {
 		t.Fatalf("parse %#v: %v", id, err)
 	} else {
 		assert.Equal(t, expected, nodeID, "node ID parse: %#v", id)
@@ -22,7 +22,7 @@ func testNodeIDParse(t *testing.T, expected NodeID, id string) {
 }
 
 func TestNodeIDParse(t *testing.T) {
-	testNodeIDParse(t, NodeID{Grid: "grid", Name: "name"}, "grid/name")
+	testNodeIDParse(t, api.NodeID{Grid: "grid", Name: "name"}, "grid/name")
 }
 
 func TestNodeGet(t *testing.T) {
@@ -31,7 +31,7 @@ func TestNodeGet(t *testing.T) {
 
 	test.mockGETFile("/v1/nodes/test/node1", "test-data/node.json")
 
-	if node, err := test.client.Nodes.Get(NodeID{"test", "node1"}); err != nil {
+	if node, err := test.client.Nodes.Get(api.NodeID{"test", "node1"}); err != nil {
 		t.Fatalf("node get error: %v", err)
 	} else {
 		assert.Equal(t, testNode, node, "response node")
@@ -41,32 +41,32 @@ func TestNodeGet(t *testing.T) {
 func TestNodeGetToken(t *testing.T) {
 	var test = makeTest()
 	var testToken = api.NodeToken{
-		ID:    "test/node",
+		ID:    api.NodeID{"test", "node"},
 		Token: "ZxeA2iQ1MT61oT808BG/ty6aKtSnsD4f1cUub+DHWTfKoCBLTVYuP/WrRyDvjZAWdHZ3jBf/mhjGMiWhJ4YpSg==",
 	}
 
 	test.mockGETFile("/v1/nodes/test/node/token", "test-data/node-token.json")
 
-	if nodeToken, err := test.client.Nodes.GetToken(NodeID{"test", "node"}); err != nil {
+	if nodeToken, err := test.client.Nodes.GetToken(api.NodeID{"test", "node"}); err != nil {
 		t.Fatalf("node get error: %v", err)
 	} else {
 		assert.Equal(t, nodeToken, testToken, "response node token")
 	}
 }
 
-func testNodeCreate(t *testing.T, id NodeID, params api.NodePOST, mockRequest mockJSON) {
+func testNodeCreate(t *testing.T, id api.NodeID, params api.NodePOST, mockRequest mockJSON) {
 	var test = makeTest()
 
 	test.mockPOST(t, "/v1/grids/"+id.Grid+"/nodes", func(request mockJSON) interface{} {
 		assert.Equal(t, mockRequest, request, "POST /v1/grids/"+id.Grid+"/nodes JSON")
 
-		return api.Node{ID: id.String()}
+		return api.Node{ID: id}
 	})
 
 	if node, err := test.client.Nodes.Create(id.Grid, params); err != nil {
 		t.Fatalf("nodes create error: %v", err)
 	} else {
-		assert.Equal(t, node.ID, id.String())
+		assert.Equal(t, node.ID, id)
 	}
 }
 
@@ -74,7 +74,7 @@ func TestNodeCreate(t *testing.T) {
 	var nodeParams = api.NodePOST{Name: "test-create"}
 	var mockRequest = parseJSON(`{"name": "test-create"}`)
 
-	testNodeCreate(t, NodeID{"test-grid", "test-create"}, nodeParams, mockRequest)
+	testNodeCreate(t, api.NodeID{"test-grid", "test-create"}, nodeParams, mockRequest)
 }
 
 func TestNodeCreateParams(t *testing.T) {
@@ -93,22 +93,22 @@ func TestNodeCreateParams(t *testing.T) {
 		}
 	`)
 
-	testNodeCreate(t, NodeID{"test-grid", "test-create-params"}, nodeParams, mockRequest)
+	testNodeCreate(t, api.NodeID{"test-grid", "test-create-params"}, nodeParams, mockRequest)
 }
 
-func testNodeUpdate(t *testing.T, id NodeID, params api.NodePUT, mockRequest mockJSON) {
+func testNodeUpdate(t *testing.T, id api.NodeID, params api.NodePUT, mockRequest mockJSON) {
 	var test = makeTest()
 
 	test.mockPUT(t, "/v1/nodes/"+id.String(), func(request mockJSON) interface{} {
 		assert.Equal(t, mockRequest, request, "PUT /v1/nodes/"+id.String()+" JSON")
 
-		return api.Node{ID: id.String()}
+		return api.Node{ID: id}
 	})
 
 	if node, err := test.client.Nodes.Update(id, params); err != nil {
 		t.Fatalf("nodes update error: %v", err)
 	} else {
-		assert.Equal(t, node.ID, id.String())
+		assert.Equal(t, node.ID, id)
 	}
 }
 
@@ -116,7 +116,7 @@ func TestNodeUpdateDefaults(t *testing.T) {
 	var nodeParams = api.NodePUT{}
 	var mockRequest = parseJSON(`{}`)
 
-	testNodeUpdate(t, NodeID{"test-grid", "test-defaults"}, nodeParams, mockRequest)
+	testNodeUpdate(t, api.NodeID{"test-grid", "test-defaults"}, nodeParams, mockRequest)
 }
 
 func TestNodeUpdateLabelsClear(t *testing.T) {
@@ -125,7 +125,7 @@ func TestNodeUpdateLabelsClear(t *testing.T) {
 	}
 	var mockRequest = parseJSON(`{ "labels": [] }`)
 
-	testNodeUpdate(t, NodeID{"test-grid", "test-labels-clear"}, nodeParams, mockRequest)
+	testNodeUpdate(t, api.NodeID{"test-grid", "test-labels-clear"}, nodeParams, mockRequest)
 }
 
 func TestNodeUpdateLabels(t *testing.T) {
@@ -134,21 +134,21 @@ func TestNodeUpdateLabels(t *testing.T) {
 	}
 	var mockRequest = parseJSON(`{ "labels": [ "test==true" ] }`)
 
-	testNodeUpdate(t, NodeID{"test-grid", "test-labels"}, nodeParams, mockRequest)
+	testNodeUpdate(t, api.NodeID{"test-grid", "test-labels"}, nodeParams, mockRequest)
 }
 
-func mockNodeTokenPUT(t *testing.T, id NodeID, mockRequest mockJSON) *test {
+func mockNodeTokenPUT(t *testing.T, id api.NodeID, mockRequest mockJSON) *test {
 	var test = makeTest()
 
 	test.mockPUT(t, "/v1/nodes/"+id.String()+"/token", func(request mockJSON) interface{} {
 		assert.Equal(t, mockRequest, request, "PUT /v1/nodes/"+id.String()+"/token JSON")
 
-		return api.NodeToken{ID: id.String(), Token: "secret"}
+		return api.NodeToken{ID: id, Token: "secret"}
 	})
 
 	return test
 }
-func mockNodeTokenDELETE(t *testing.T, id NodeID, mockRequest mockJSON) *test {
+func mockNodeTokenDELETE(t *testing.T, id api.NodeID, mockRequest mockJSON) *test {
 	var test = makeTest()
 
 	test.mockDELETE(t, "/v1/nodes/"+id.String()+"/token", func(request mockJSON) interface{} {
@@ -161,7 +161,7 @@ func mockNodeTokenDELETE(t *testing.T, id NodeID, mockRequest mockJSON) *test {
 }
 
 func TestNodeCreateTokenDefaults(t *testing.T) {
-	var nodeID = NodeID{"test-grid", "test-node"}
+	var nodeID = api.NodeID{"test-grid", "test-node"}
 	var params = api.NodeTokenParams{}
 	var mockRequest = parseJSON(`{"reset_connection": false}`)
 
@@ -170,12 +170,12 @@ func TestNodeCreateTokenDefaults(t *testing.T) {
 	if nodeToken, err := test.client.Nodes.CreateToken(nodeID, params); err != nil {
 		t.Fatalf("nodes token update error: %v", err)
 	} else {
-		assert.Equal(t, nodeToken.ID, nodeID.String())
+		assert.Equal(t, nodeToken.ID, nodeID)
 	}
 }
 
 func TestNodeCreateToken(t *testing.T) {
-	var nodeID = NodeID{"test-grid", "test-node"}
+	var nodeID = api.NodeID{"test-grid", "test-node"}
 	var params = api.NodeTokenParams{ResetConnection: true}
 	var mockRequest = parseJSON(`{"reset_connection": true}`)
 
@@ -184,12 +184,12 @@ func TestNodeCreateToken(t *testing.T) {
 	if nodeToken, err := test.client.Nodes.CreateToken(nodeID, params); err != nil {
 		t.Fatalf("nodes token update error: %v", err)
 	} else {
-		assert.Equal(t, nodeToken.ID, nodeID.String())
+		assert.Equal(t, nodeToken.ID, nodeID)
 	}
 }
 
 func TestNodeUpdateToken(t *testing.T) {
-	var nodeID = NodeID{"test-grid", "test-node"}
+	var nodeID = api.NodeID{"test-grid", "test-node"}
 	var token = "secret 2"
 	var params = api.NodeTokenParams{ResetConnection: true}
 	var mockRequest = parseJSON(`{"reset_connection": true, "token": "secret 2"}`)
@@ -199,12 +199,12 @@ func TestNodeUpdateToken(t *testing.T) {
 	if nodeToken, err := test.client.Nodes.UpdateToken(nodeID, token, params); err != nil {
 		t.Fatalf("nodes token update error: %v", err)
 	} else {
-		assert.Equal(t, nodeToken.ID, nodeID.String())
+		assert.Equal(t, nodeToken.ID, nodeID)
 	}
 }
 
 func TestNodeDeleteToken(t *testing.T) {
-	var nodeID = NodeID{"test-grid", "test-node"}
+	var nodeID = api.NodeID{"test-grid", "test-node"}
 	var params = api.NodeTokenParams{ResetConnection: true}
 	var mockRequest = parseJSON(`{"reset_connection": true}`)
 
